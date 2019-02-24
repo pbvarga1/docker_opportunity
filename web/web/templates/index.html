@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='pages/home/module.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='pages/home/service.js') }}"></script>
+    <!-- <script type="text/javascript" src="{{ url_for('static', filename='pages/home/modals/imageError.js') }}"></script> -->
+    <script type="text/javascript" src="{{ url_for('static', filename='pages/home/component.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='app.js') }}"></script>
+  </head>
+  <body ng-app='app'>
+    <div ng-view></div>
+  </body>
+</html>

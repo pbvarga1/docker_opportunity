@@ -1,0 +1,62 @@
+<div class="container-fluid">
+  <br>
+  <br>
+  <br>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 style="text-align: center;">Opportunity Image Viewer</h1>
+    </div>
+  </div>
+
+  <br>
+  <br>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <h1 style="text-align: center;">Create Image Types</h1>
+    </div>
+    <div class="col-lg-6"></div>
+  </div>
+
+   <div class="form-group">
+    <div class="row">
+      <div class="col-lg-1"></div>
+      <div class="col-lg-2">
+        <label class="col-form-label" for="imageUrl">Product Type Name</label>
+      </div>
+      <div class="col-lg-6">
+          <input type="text" class="form-control" id="inputDefault" ng-model="$ctrl.productTypeName">
+      </div>
+      <div class="col-lg-3"></div>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="form-group">
+    <div class="row">
+      <div class="col-lg-12" style="text-align: center;">
+        <button type="button" class="btn btn-primary" ng-click="$ctrl.createProductType();">Create Product Type</button>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="form-group">
+    <div class="row">
+      <div class="col-lg-1"></div>
+      <div class="col-lg-2">
+        <label class="col-form-label" for="prodType">Product Type</label>
+      </div>
+      <div class="col-lg-6">
+          <select ng-model="$ctrl.selectedProductType" class="form-control" id="prodType" ng-options="x as x for x in $ctrl.productTypes"></select>
+      </div>
+      <div class="col-lg-3"></div>
+    </div>
+  </div>
+
+
+
+</div>

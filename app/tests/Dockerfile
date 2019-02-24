@@ -1,0 +1,3 @@
+FROM postgres
+ENV POSTGRES_PASSWORD=testpass
+ENV POSTGRES_USER=testing

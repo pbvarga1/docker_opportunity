@@ -1,0 +1,30 @@
+version: '3.1'
+
+services:
+    opp-database:
+        image: postgres
+        restart: always
+        environment:
+            - POSTGRES_PASSWORD=mypass
+            - POSTGRES_USER=perry
+        ports:
+            - 5433:5432
+    opp-app:
+        build: ./app
+        restart: always
+        volumes:
+            - /c/Users/perry/WSL/Workspace/for_fun/opportunity/app:/usr/src/app/app
+        ports:
+            - 5001:80
+        depends_on:
+            - opp-database
+    opp-web:
+        build: ./web
+        restart: always
+        volumes:
+            - /c/Users/perry/WSL/Workspace/for_fun/opportunity/web:/usr/src/app/web
+        ports:
+            - 5002:81
+        depends_on:
+            - opp-database
+            - opp-app
