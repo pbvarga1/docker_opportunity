@@ -1,25 +1,20 @@
 language: python
 sudo: false
 
-services:
-  - docker
-
 python:
   - "3.6"
 
-install: 
-  - pip install -r requirements.txt
-  - pip install -e app
-
-script: pytest app/tests
-
-install: pip install -r requirements.txt
-         - pip install -e web
-
-script: pytest web/tests
+services:
+  - docker
 
 jobs:
   include:
     - stage: tests
+      install: 
+        - pip install -r requirements.txt
+        - pip install -e app
       script: pytest app/tests
+      install:
+        - pip install -r requirements.txt
+        - pip install -e web
       script: pytest web/tests
