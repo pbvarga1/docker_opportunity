@@ -19,11 +19,18 @@ issues for what I plan to do going forward.
 
 Software/techniques/packages used so far.
 
-* Docker
-    * Testing with Docker
-* PostgreSQL
-* Flask
-* Flask-SQLAlchemy
-* REST API
-* Angularjs
-* pytest
+* [Docker](https://docs.docker.com/)
+    * Testing with Docker: Creating a temporary database in docker and using
+      the database to test as if on a live server
+* [PostgreSQL](https://www.postgresql.org/docs/)
+* [Flask](http://flask.pocoo.org/)
+* [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/)
+* [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer)
+* [Angularjs](https://docs.angularjs.org/api)
+* [pytest](https://docs.pytest.org/en/latest/contents.html)
+    * [fixtures](https://docs.pytest.org/en/latest/fixture.html)
+* [mock](https://docs.python.org/3/library/unittest.mock.html)
+* [Travis-CI](https://docs.travis-ci.com/)
+* [coveralls (code coverage)](https://docs.coveralls.io/)
+* [flake8 (pep8 style guide)](http://flake8.pycqa.org/en/latest/)
+* [python packaging](https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py)
