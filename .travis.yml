@@ -13,6 +13,7 @@ before_script:
   # http://docs.travis-ci.com/user/database-setup/#MySQL
   - sudo /etc/init.d/mysql stop
   - sudo /etc/init.d/postgresql stop
+  - docker pull posgres
 
 stages:
   - tests
@@ -25,6 +26,6 @@ install:
 jobs:
   include:
     - stage: "tests"
-      script: pytest app/tests
+      script: pytest app/tests -v -x
     -
       script: pytest web/tests
