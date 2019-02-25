@@ -1,5 +1,8 @@
 # Opportunity App
 
+[![Build Status](https://travis-ci.com/pbvarga1/docker_opportunity.svg?branch=master)](https://travis-ci.com/pbvarga1/docker_opportunity)
+
+
 I want to play around with some programming techniques (listed below). This
 repo can be used as examples of using these techniques (although I do not
 guarantee that they are all the *best* way to do things as I am just learning).
