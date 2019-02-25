@@ -11,5 +11,8 @@ install: pip install -r requirements.txt
 install: pip install -e app
 install: pip install -e web
 
-script: pytest app/tests
-script: pytest web/tests
+jobs:
+  include:
+    - stage: tests
+      script: pytest app/tests
+      script: pytest web/tests
