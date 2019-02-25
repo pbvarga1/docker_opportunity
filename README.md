@@ -1,7 +1,7 @@
 # Opportunity App
 
 [![Build Status](https://travis-ci.com/pbvarga1/docker_opportunity.svg?branch=master)](https://travis-ci.com/pbvarga1/docker_opportunity)
-
+[![Coverage Status](https://coveralls.io/repos/github/pbvarga1/docker_opportunity/badge.svg?branch=master)](https://coveralls.io/github/pbvarga1/docker_opportunity?branch=master)
 
 I want to play around with some programming techniques (listed below). This
 repo can be used as examples of using these techniques (although I do not
