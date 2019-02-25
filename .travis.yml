@@ -7,8 +7,9 @@ services:
 python:
   - "3.6"
 
-install: pip install -r requirements.txt
-         - pip install -e web
+install: 
+  - pip install -r requirements.txt
+  - pip install -e app
 
 script: pytest app/tests
 
