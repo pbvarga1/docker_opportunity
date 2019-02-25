@@ -17,6 +17,9 @@ before_script:
 stages:
   - tests
 
+env:
+  - COVERALLS_PARALLEL=true
+
 install:
   - pip install -r requirements.txt
   - pip install -e app
@@ -31,3 +34,6 @@ jobs:
 
 after_success:
   - coveralls
+
+notifications:
+  webhooks: https://coveralls.io/webhook
