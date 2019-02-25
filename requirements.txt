@@ -3,3 +3,4 @@ docker==3.7.0
 requests==2.21.0
 coveralls==1.6.0
 pytest-cov==2.6.1
+flake8==3.7.6

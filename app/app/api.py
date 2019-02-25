@@ -1,4 +1,3 @@
-from sqlalchemy.sql.expression import true
 from flask import abort, jsonify, request, Response
 
 from app.app import (

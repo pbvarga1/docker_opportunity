@@ -28,9 +28,13 @@ install:
 jobs:
   include:
     - stage: "tests"
-      script: pytest app/tests -v --cov=app/app
+      script:
+        - pytest app/tests -v --cov=app/app
+        - flake8 app/
     -
-      script: pytest web/tests -v --cov=web/web
+      script:
+        - pytest web/tests -v --cov=web/web
+        - flake8 web/
 
 after_success:
   - coveralls
