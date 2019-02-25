@@ -36,6 +36,7 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    # Different host names depending if on windows or posix
     if os.name == 'posix':
         host = '127.0.0.1'
     else:

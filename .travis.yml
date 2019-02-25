@@ -28,3 +28,6 @@ jobs:
       script: pytest app/tests -v -x
     -
       script: pytest web/tests
+
+after_success:
+  - coveralls
