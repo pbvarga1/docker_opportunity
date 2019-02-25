@@ -1,0 +1,10 @@
+language: python
+sudo: false
+
+python:
+  - "3.7"
+
+install: pip install -r requirements.txt
+
+script: pytest app/tests
+script: pytest web/tests
