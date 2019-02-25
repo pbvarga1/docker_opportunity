@@ -7,14 +7,16 @@ python:
 services:
   - docker
 
+stages:
+  - tests
+
+install:
+  - pip install -r requirements.txt
+  - pip install -e app/tests
+  - pip install -e web/tests
+
 jobs:
   include:
-    - stage: tests
-      - install: 
-        - pip install -r requirements.txt
-        - pip install -e app
+    - stage: "tests"
       - script: pytest app/tests
-      - install:
-        - pip install -r requirements.txt
-        - pip install -e web
       - script: pytest web/tests
