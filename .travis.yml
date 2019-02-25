@@ -1,0 +1,33 @@
+language: python
+sudo: false
+
+python:
+  - "3.6"
+
+services:
+  - docker
+
+before_script:
+
+  # Disable services enabled by default
+  # http://docs.travis-ci.com/user/database-setup/#MySQL
+  - sudo /etc/init.d/mysql stop
+  - sudo /etc/init.d/postgresql stop
+
+stages:
+  - tests
+
+install:
+  - pip install -r requirements.txt
+  - pip install -e app
+  - pip install -e web
+
+jobs:
+  include:
+    - stage: "tests"
+      script: pytest app/tests -v -x
+    -
+      script: pytest web/tests
+
+after_success:
+  - coveralls

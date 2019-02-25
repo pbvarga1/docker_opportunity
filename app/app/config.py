@@ -36,9 +36,14 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    # Different host names depending if on windows or posix
+    if os.name == 'posix':
+        host = '127.0.0.1'
+    else:
+        host = '192.168.99.100'
     SQLALCHEMY_DATABASE_URI = PG_URI.format(
         name='testing',
         password='testpass',
-        image='192.168.99.100',
+        image=host,
         port=5432
     )
