@@ -25,9 +25,9 @@ install:
 jobs:
   include:
     - stage: "tests"
-      script: pytest app/tests -v -x
+      script: pytest app/tests -v --cov=app/app
     -
-      script: pytest web/tests
+      script: pytest web/tests -v --cov=web/web
 
 after_success:
   - coveralls
