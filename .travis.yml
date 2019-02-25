@@ -18,5 +18,6 @@ install:
 jobs:
   include:
     - stage: "tests"
-      - script: pytest app/tests
-      - script: pytest web/tests
+      script: pytest app/tests
+    -
+      script: pytest web/tests
