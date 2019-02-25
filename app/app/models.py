@@ -110,7 +110,7 @@ class Image(db.Model):
             self.Sol = image_dict['Sol']
         if 'DetatchedLabel' in image_dict:
             self.DetatchedLabel = image_dict['DetatchedLabel']
-        if 'camera_id' in image_dict:
-            self.camera_id = image_dict['camera_id']
-        if 'type_id' in image_dict:
-            self.type_id = image_dict['type_id']
+        if 'CameraID' in image_dict:
+            self.CameraID = image_dict['CameraID']
+        if 'ProductTypeID' in image_dict:
+            self.ProductTypeID = image_dict['ProductTypeID']

@@ -19,10 +19,15 @@ class Base(Model):
         nullable=False,
         default=datetime.utcnow,
     )
-    Updated = sa.Column(sa.DateTime, onupdate=datetime.utcnow)
+    Updated = sa.Column(
+        sa.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+    )
 
     def __repr__(self):
-        return f'{self.__class.__name__}({self.ID})'
+        return f'{self.__class__.__name__}({self.ID})'
 
     def to_dict(self):
         return {

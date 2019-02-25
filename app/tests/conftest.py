@@ -1,4 +1,5 @@
 import os
+import time
 
 import pytest
 import docker
@@ -29,9 +30,12 @@ def docker_container():
         n = 0
         for n, text in enumerate(container.logs(stream=True)):
             if b'database system is ready to accept connections' in text:
+                time.sleep(2)
                 break
             elif n < 100:
                 continue
+
+        # Posgres database ready to go
         yield container
     except Exception:
         raise
@@ -41,11 +45,17 @@ def docker_container():
         client.images.remove('app-test', force=True)
 
 
-@pytest.fixture()
-def session(docker_container):
-    application = db.get_app()
-    application.config.from_object(config.TestingConfig)
-    db.session.commit()
+@pytest.fixture(scope='session', autouse=True)
+def application():
+    testing_app = db.get_app()
+    testing_app.config.from_object(config.TestingConfig)
+    return testing_app
+
+
+@pytest.fixture
+def session(application, docker_container):
+    assert db.get_app().config['TESTING']
+    db.session.rollback()
     db.drop_all()
     db.create_all()
     try:
@@ -53,5 +63,6 @@ def session(docker_container):
     except Exception:
         raise
     finally:
-        db.session.commit()
+        # Roll back any trasactions that are in place before continuing
+        db.session.rollback()
         db.drop_all()
