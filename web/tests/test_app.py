@@ -1,9 +1,9 @@
 import json
 from unittest import mock
-from werkzeug.exceptions import BadRequest
 
 import pytest
 import requests
+from flask import Response
 
 from web.app import app
 app.config['TESTING'] = True
@@ -34,6 +34,13 @@ def create_response(data):
     response.status_code = 200
     response._content = json.dumps(data).encode()
     return response
+
+
+@mock.patch('web.app.render_template', autospec=True)
+def test_index(render_template, client):
+    render_template.return_value = Response(200, 'fake')
+    client.get('/')
+    render_template.assert_called_once_with('index.html')
 
 
 def test_create_product_type(mock_requests, client):
