@@ -12,11 +12,11 @@ stages:
 
 install:
   - pip install -r requirements.txt
-  - pip install -e app/tests
-  - pip install -e web/tests
+  - pip install -e app
+  - pip install -e web
 
 jobs:
   include:
     - stage: "tests"
       script: pytest app/tests
-      cript: pytest web/tests
+      script: pytest web/tests
