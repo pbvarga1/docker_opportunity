@@ -8,6 +8,8 @@ python:
   - "3.6"
 
 install: pip install -r requirements.txt
+install: pip install -e app
+install: pip install -e web
 
 script: pytest app/tests
 script: pytest web/tests
