@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, abort
 
 app = Flask(__name__)
 
@@ -14,8 +14,10 @@ def index():
 @app.route('/product_types', methods=['POST'])
 def create_product_type():
     url = f'{API_URL}/product_types'
-    data = {'Name': request.json['name'].upper()}
-    print(data)
+    try:
+        data = {'Name': request.json['name'].upper()}
+    except KeyError:
+        abort(400, 'json format should be {"name": "<product_type>"')
     response = requests.post(url, json=data)
     response.raise_for_status()
     return jsonify(product_type=response.json())
@@ -28,7 +30,7 @@ def get_product_types():
     response = requests.get(url, params=params)
     try:
         response.raise_for_status()
-    except:
+    except requests.exceptions.HTTPError:
         return jsonify(names=[])
     product_types = response.json()
     names = [product_type['Name'] for product_type in product_types]
