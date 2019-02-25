@@ -10,11 +10,11 @@ services:
 jobs:
   include:
     - stage: tests
-      install: 
+      - install: 
         - pip install -r requirements.txt
         - pip install -e app
-      script: pytest app/tests
-      install:
+      - script: pytest app/tests
+      - install:
         - pip install -r requirements.txt
         - pip install -e web
-      script: pytest web/tests
+      - script: pytest web/tests
