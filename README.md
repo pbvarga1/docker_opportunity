@@ -34,3 +34,5 @@ Software/techniques/packages used so far.
 * [coveralls (code coverage)](https://docs.coveralls.io/)
 * [flake8 (pep8 style guide)](http://flake8.pycqa.org/en/latest/)
 * [python packaging](https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py)
+* [yarn](https://yarnpkg.com/en/)
+    * js package management in general
