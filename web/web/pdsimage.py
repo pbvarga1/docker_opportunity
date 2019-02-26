@@ -1,6 +1,8 @@
 import pvl
 import numpy as np
 
+import requests
+
 
 class PDSImage:
 
@@ -73,20 +75,28 @@ class PDSImage:
         return (bands, lines, samples)
 
     @classmethod
-    def open(cls, filename, detatched=False):
-        label = pvl.load(filename, strict=False)
+    def from_url(cls, url, detatched=False):
+        resp = requests.get(url)
+        resp.raise_for_status()
+        content = resp.content
+        if detatched:
+            resp = requests.get(url.replace('.img', '.lbl'))
+            resp.raise_for_status()
+            lbl_content = resp.content
+        else:
+            lbl_content = content
+        label = pvl.loads(lbl_content, strict=False)
         start_byte = cls._get_start_byte(label)
         shape = cls._get_shape(label)
         sample_type = cls.SAMPLE_TYPES[label['IMAGE']['SAMPLE_TYPE']]
         sample_byte = int(label['IMAGE']['SAMPLE_BITS'] // 8)
         dtype = np.dtype(f'{sample_type}{sample_byte}')
-        with open(filename, 'rb') as stream:
-            data = np.frombuffer(
-                buffer=stream,
-                dtype=dtype,
-                offset=start_byte,
-            )
-            data = data.reshape(shape).copy()
+        data = np.frombuffer(
+            buffer=content,
+            dtype=dtype,
+            offset=start_byte,
+        )
+        data = data.reshape(shape).copy()
         return cls(data, label)
 
     def __init__(self, data, label):
