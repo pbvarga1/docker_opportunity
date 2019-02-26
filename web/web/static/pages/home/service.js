@@ -5,4 +5,10 @@ angular.module('homeApp').service('homeService', function($http) {
     this.getProductTypes = function() { 
         return $http.get('/product_types');
     }
+    this.createCamera = function(name) { 
+        return $http.post('/cameras', data={name: name});
+    }
+    this.getCameraNames = function() { 
+        return $http.get('/cameras');
+    }
 });

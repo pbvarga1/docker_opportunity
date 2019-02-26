@@ -107,7 +107,7 @@ def get_create_update_or_delete(resource, ID=None):
     }
     Resource = resources.get(resource)
     if not Resource:
-        abort(Response(f'Could not find resource {resource}'), 404)
+        abort(404, f'Could not find resource {resource}')
 
     method, status_code = methods[request.method]
     return jsonify(method(Resource, ID=ID)), status_code

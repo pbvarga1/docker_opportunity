@@ -5,19 +5,33 @@ angular.module('homeApp').component('home', {
         $ctrl.productTypeName = '';
         $ctrl.selectedProductTypeName = '';
         $ctrl.productTypes = [];
+        $ctrl.cameraName = '';
+        $ctrl.selectedcameraName = '';
+        $ctrl.cameraNames = [];
         setProductTypes();
+        setCameraNames();
 
         function setProductTypes() {
             homeService.getProductTypes().then(function(data) {
-                console.log(data.data.names);
                 $ctrl.productTypes = data.data.names;
-                console.log($ctrl.productTypes);
             });
         }
 
         $ctrl.createProductType = function() {
             homeService.createProductType($ctrl.productTypeName).then(function(data) {
                 setProductTypes();
+            })
+        }
+
+        function setCameraNames() {
+            homeService.getCameraNames().then(function(data) {
+                $ctrl.cameraNames = data.data.names;
+            });
+        }
+
+        $ctrl.createCamera = function() {
+            homeService.createCamera($ctrl.cameraName).then(function(data) {
+                setCameraNames();
             })
         }
     }
