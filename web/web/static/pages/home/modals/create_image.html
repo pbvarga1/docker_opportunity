@@ -1,0 +1,50 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Register an Image</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-1"></div>
+                <div class="col-lg-2">
+                    <label class="col-form-label" for="prodType">Product Type</label>
+                </div>
+                <div class="col-lg-6">
+                    <select ng-model="$ctrl.productType" class="form-control" id="prodType" ng-options="x as x for x in $ctrl.productTypes"></select>
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-1"></div>
+                <div class="col-lg-2">
+                    <label class="col-form-label" for="camera">Camera</label>
+                </div>
+                <div class="col-lg-6">
+                    <select ng-model="$ctrl.camera" class="form-control" id="camera" ng-options="x as x for x in $ctrl.cameras"></select>
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-1"></div>
+                <div class="col-lg-2">
+                    <label class="col-form-label" for="url">URL</label>
+                </div>
+                <div class="col-lg-6">
+                    <input type="text" class="form-control" id="url" ng-model="$ctrl.url">
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>
+        <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+    </div>
+</div>
