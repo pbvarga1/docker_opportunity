@@ -1,0 +1,17 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "description": "Learn and apply programming skills",
+  "main": "index.js",
+  "repository": "git@github.com:pbvarga1/docker_opportunity.git",
+  "author": "Perry Vargas",
+  "license": "MIT",
+  "dependencies": {
+    "angular": "1.6.9",
+    "angular-animate": "1.6.9",
+    "angular-route": "1.6.9",
+    "angular-ui-bootstrap": "2.5.6",
+    "bootstrap": "3.4.1",
+    "jquery": "3.3.1"
+  }
+}
