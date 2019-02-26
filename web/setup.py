@@ -18,6 +18,7 @@ setup(
         'requests==2.21.0',
         'pvl==0.3.0',
         'numpy==1.16.1',
+        'matplotlib==3.0.2',
     ],
     license="BSD",
     zip_safe=False,

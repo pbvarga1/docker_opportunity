@@ -1,7 +1,10 @@
-import pvl
-import numpy as np
+from io import BytesIO
 
+import pvl
 import requests
+import numpy as np
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_egg import FigureCanvasAgg as FigureCanvas
 
 
 class PDSImage:
@@ -124,3 +127,18 @@ class PDSImage:
             return self.data.squeeze()
         elif self.bands == 3:
             return np.dstack(self.data)
+
+    def get_png_output(self):
+        fig = Figure()
+        ax = fig.add_subplot(111)
+        fig.patch.set_visible(False)
+        if self.bands == 1:
+            cmap = 'gray'
+        else:
+            cmap = None
+        ax.imshow(self.image, cmap=cmap)
+        ax.axis('off')
+        canvas = FigureCanvas(fig)
+        png_output = BytesIO()
+        canvas.print_png(png_output)
+        return png_output
