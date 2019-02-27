@@ -11,15 +11,14 @@ angular.module('homeApp').component('createImageComponent', {
         $ctrl.$onInit = function() {
             $ctrl.productTypes = $ctrl.resolve.productTypes;
             $ctrl.cameras = $ctrl.resolve.cameras;
-            console.log($ctrl.cameras)
             $ctrl.imageName = '';
             $ctrl.url = '';
             $ctrl.productType = '';
             $ctrl.camera = '';
-            $ctrl.detatched = null;
+            $ctrl.detatched = false;
         }
 
-        $ctrl.ok = function () {
+        $ctrl.ok = function(){
             $ctrl.close({
                 $value: {
                     imageName: $ctrl.imageName,
@@ -29,6 +28,10 @@ angular.module('homeApp').component('createImageComponent', {
                     detatched: $ctrl.detatched,
                 }
             });
+        };
+
+        $ctrl.cancel = function(){
+            $ctrl.dismiss({$value: 'cancel'});
         };
     }
 });
