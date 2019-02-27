@@ -43,7 +43,7 @@ def _get_resources(resource_name):
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError:
-        return jsonify(names=[])
+        return []
     resources = response.json()
     return resources
 
@@ -51,7 +51,7 @@ def _get_resources(resource_name):
 @app.route('/product_types', methods=['POST'])
 def create_product_type():
     product_type = _create_resource('product_types', True)
-    return jsonify(product_type=product_type)
+    return jsonify(data=product_type)
 
 
 @app.route('/product_types', methods=['GET'])
@@ -62,8 +62,8 @@ def get_product_types():
 
 @app.route('/cameras', methods=['POST'])
 def create_camera():
-    product_type = _create_resource('cameras', False)
-    return jsonify(product_type=product_type)
+    camera = _create_resource('cameras', False)
+    return jsonify(data=camera)
 
 
 @app.route('/cameras', methods=['GET'])
