@@ -68,7 +68,7 @@ class PDSImage:
             return (im_pointer - 1) * record_bytes
 
         if isinstance(im_pointer, pvl.Units) and im_pointer.units == 'BYTES':
-            return im_pointer.im_pointer
+            return im_pointer.value
 
     @staticmethod
     def _get_shape(label):
