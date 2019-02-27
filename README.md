@@ -43,3 +43,31 @@ Software/techniques/packages used so far.
 * [python packaging](https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py)
 * [yarn](https://yarnpkg.com/en/)
     * js package management in general
+
+
+## Quick Start
+
+If you want to use this project for your own learning exercises, fork the repo
+to your own github account and then clone your forked repo to your computer.
+Make sure docker is installed and running. From the top directory
+``oportunity``, run:
+
+```shell
+$ docker-compose up
+```
+
+Which will build the images and run the docker containers. If you are using
+dockertoolbox, then the host will be ``192.168.99.100``, otherwise it will be
+the local host ``127.0.0.1``. In the examples ahead, I assume the host will
+be ``127.0.0.1``. In your browser go to ``http://192.168.99.100:5002/`` to
+see the home web page:
+
+![home page][homepage.jpg]
+
+The first two links allow you to register product types (i.e. EDR, RDR) and
+cameras (i.e. pancam). The third link is where you will find images to
+register. Clicking ``Register Image`` allows you to register an image with the
+local database and then select it for viewing. Selecting an image will display
+it on the home page.
+
+Port ``5001`` is where the API is located to retrieve data from the database.
