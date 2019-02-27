@@ -12,6 +12,11 @@ angular-route@1.6.9:
   resolved "https://registry.yarnpkg.com/angular-route/-/angular-route-1.6.9.tgz#73c63cec6a8a6b924698aec635eac32aa41f5e2b"
   integrity sha512-giE0PD0T17ZvtJmAB6di27YPPSzYC1kP1BDpM2ZIGZUbs02PvJWRIgYA8z3dy9olzCS35TOwxmE2fJoHWTMm1A==
 
+angular-sanitize@1.6.9:
+  version "1.6.9"
+  resolved "https://registry.yarnpkg.com/angular-sanitize/-/angular-sanitize-1.6.9.tgz#1adba33f6f513e5f93e3aca8071bef53666739ea"
+  integrity sha512-zWGQHWvmftkPTR0s6RCF9gx/pezR1V0swcVrkimMyBW3eK3ly7inG5BDDSt2oGExhWufV2VfnIv01T+tBUckNg==
+
 angular-ui-bootstrap@2.5.6:
   version "2.5.6"
   resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.5.6.tgz#23937322ec641a6fbee16498cc32452aa199e7c5"

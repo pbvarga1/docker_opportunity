@@ -1,1 +1,1 @@
-angular.module('homeApp', []);
+angular.module('homeApp', ['ui.bootstrap']);
