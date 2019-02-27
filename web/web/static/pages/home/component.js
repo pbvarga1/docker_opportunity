@@ -3,17 +3,20 @@ angular.module('homeApp').component('home', {
     controller: function homeController($uibModal, homeService) {
         $ctrl = this;
         $ctrl.productTypeName = '';
-        $ctrl.selectedProductTypeName = '';
+        $ctrl.selectedProductType = null;
         $ctrl.productTypes = [];
-        $ctrl.cameraName = '';
-        $ctrl.selectedcameraName = '';
-        $ctrl.cameraNames = [];
+        $ctrl.camera = '';
+        $ctrl.selectedCamera = null;
+        $ctrl.cameras = [];
+        $ctrl.allImages = [];
+        $ctrl.imageSrc = '';
         setProductTypes();
-        setCameraNames();
+        setCameras();
+        setImages();
 
         function setProductTypes() {
             homeService.getProductTypes().then(function(data) {
-                $ctrl.productTypes = data.data.names;
+                $ctrl.productTypes = data.data.data;
             });
         }
 
@@ -23,16 +26,22 @@ angular.module('homeApp').component('home', {
             })
         }
 
-        function setCameraNames() {
+        function setCameras() {
             homeService.getCameraNames().then(function(data) {
-                $ctrl.cameraNames = data.data.names;
+                $ctrl.cameras = data.data.data;
             });
         }
 
         $ctrl.createCamera = function() {
             homeService.createCamera($ctrl.cameraName).then(function(data) {
-                setCameraNames();
+                setCameras();
             })
+        }
+
+        function setImages() {
+            homeService.getImages().then(function(data) {
+                $ctrl.allImages = data.data.data;
+            });
         }
 
         $ctrl.openCreateImage = function() {
@@ -40,7 +49,7 @@ angular.module('homeApp').component('home', {
                 component: 'createImageComponent',
                 resolve: {
                     cameras: function() {
-                        return $ctrl.cameraNames;
+                        return $ctrl.cameras;
                     },
                     productTypes: function() {
                         return $ctrl.productTypes;
@@ -48,9 +57,26 @@ angular.module('homeApp').component('home', {
                 }
             });
 
-            modalInstance.result.then(function(new_image) {
-                console.log(new_image);
-            });
+            modalInstance.result.then(
+                function(new_image) {
+                    homeService.registerImage(new_image).then(function(data) {
+                        setImages();
+                    });
+                },
+                function() {
+                    null;
+                }
+            );
+        };
+
+        $ctrl.displayImage = function() {
+            console.log('/display_image?url=' + $ctrl.selectedImage['URL']);
+            $ctrl.imageSrc = '/display_image?url=' + $ctrl.selectedImage['URL'];
+        };
+
+        $ctrl.onImageError = function() {
+            console.log('ERROR');
+            $ctrl.imageSrc = '';
         }
     }
 });

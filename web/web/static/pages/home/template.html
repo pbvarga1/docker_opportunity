@@ -12,13 +12,6 @@
   <br>
   <br>
 
-  <div class="row">
-    <div class="col-lg-6">
-      <h1 style="text-align: center;">Create Image Types</h1>
-    </div>
-    <div class="col-lg-6"></div>
-  </div>
-
    <div class="form-group">
     <div class="row">
       <div class="col-lg-1"></div>
@@ -51,7 +44,7 @@
         <label class="col-form-label" for="prodType">Product Type</label>
       </div>
       <div class="col-lg-6">
-          <select ng-model="$ctrl.selectedProductType" class="form-control" id="prodType" ng-options="x as x for x in $ctrl.productTypes"></select>
+          <select ng-model="$ctrl.selectedProductType" class="form-control" id="prodType" ng-options="x.Name for x in $ctrl.productTypes"></select>
       </div>
       <div class="col-lg-3"></div>
     </div>
@@ -92,7 +85,7 @@
         <label class="col-form-label" for="camera">Camera</label>
       </div>
       <div class="col-lg-6">
-          <select ng-model="$ctrl.selectedCameraName" class="form-control" id="camera" ng-options="x as x for x in $ctrl.cameraNames"></select>
+          <select ng-model="$ctrl.selectedCamera" class="form-control" id="camera" ng-options="x.Name for x in $ctrl.cameras"></select>
       </div>
       <div class="col-lg-3"></div>
     </div>
@@ -105,6 +98,38 @@
     <div class="row">
       <div class="col-lg-12" style="text-align: center;">
         <button type="button" class="btn btn-primary" ng-click="$ctrl.openCreateImage();">Create Image</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="row">
+      <div class="col-lg-1"></div>
+      <div class="col-lg-2">
+        <label class="col-form-label" for="imageSelect">Image</label>
+      </div>
+      <div class="col-lg-6">
+          <select ng-model="$ctrl.selectedImage" class="form-control" id="imageSelect" ng-options="x.Name for x in $ctrl.allImages" ng-change="$ctrl.displayImage()"></select>
+      </div>
+      <div class="col-lg-3"></div>
+    </div>
+  </div>
+
+  <br>
+  <br>
+
+  <div class="form-group" ng-if="$ctrl.imageSrc != ''">
+    <div class="row">
+      <div class="col-lg-12">
+        <img
+          ng-src="{{$ctrl.imageSrc}}"
+          onerror="$ctrl.onImageError()"
+          style="
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 40%;"
+            >
       </div>
     </div>
   </div>

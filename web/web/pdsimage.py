@@ -4,7 +4,7 @@ import pvl
 import requests
 import numpy as np
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_egg import FigureCanvasAgg as FigureCanvas
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 
 class PDSImage:
