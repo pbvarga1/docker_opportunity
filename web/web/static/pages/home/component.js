@@ -70,8 +70,7 @@ angular.module('homeApp').component('home', {
         };
 
         $ctrl.displayImage = function() {
-            console.log('/display_image?url=' + $ctrl.selectedImage['URL']);
-            $ctrl.imageSrc = '/display_image?url=' + $ctrl.selectedImage['URL'];
+            $ctrl.imageSrc = '/services/display_image?url=' + $ctrl.selectedImage['URL'];
         };
 
         $ctrl.onImageError = function() {
