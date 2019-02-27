@@ -1,4 +1,4 @@
-from flask import abort, jsonify, request, Response
+from flask import abort, jsonify, request
 
 from app.app import (
     db,
