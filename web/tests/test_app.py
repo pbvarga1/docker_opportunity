@@ -87,7 +87,7 @@ def test_get_resources(mock_requests):
 def test_create_product_type(_create_resource, client):
     data = {'Name': 'foo', 'ID': 1}
     _create_resource.return_value = data
-    pt = client.post('/product_types', json={'name': 'foo'})
+    pt = client.post('/services/product_types', json={'name': 'foo'})
     _create_resource.assert_called_once_with('product_types', True)
     assert pt.json['data'] == data
 
@@ -96,7 +96,7 @@ def test_create_product_type(_create_resource, client):
 def test_get_product_types(_get_resources, client):
     data = [{'Name': 'foo', 'ID': 1}, {'Name': 'bar', 'ID': 2}]
     _get_resources.return_value = data
-    r = client.get('/product_types')
+    r = client.get('/services/product_types')
     assert r.json == {'data': data}
     assert r.status_code == 200
     _get_resources.assert_called_once_with('product_types')
@@ -106,7 +106,7 @@ def test_get_product_types(_get_resources, client):
 def test_create_camera(_create_resource, client):
     data = {'Name': 'foo', 'ID': 1}
     _create_resource.return_value = data
-    cam = client.post('/cameras', json={'name': 'foo'})
+    cam = client.post('/services/cameras', json={'name': 'foo'})
     _create_resource.assert_called_once_with('cameras', False)
     assert cam.json['data'] == data
 
@@ -115,7 +115,7 @@ def test_create_camera(_create_resource, client):
 def test_get_cameras(_get_resources, client):
     data = [{'Name': 'foo', 'ID': 1}, {'Name': 'bar', 'ID': 2}]
     _get_resources.return_value = data
-    r = client.get('/cameras')
+    r = client.get('/services/cameras')
     assert r.json == {'data': data}
     assert r.status_code == 200
     _get_resources.assert_called_once_with('cameras')
@@ -131,7 +131,7 @@ def test_register_image(mock_requests, client):
         'productType': 1,
         'camera': 2,
     }
-    r = client.post('/images', json=data)
+    r = client.post('/services/images', json=data)
     assert r.status_code == 200
     mock_requests.post.assert_called_once_with(
         '/images',
@@ -146,20 +146,20 @@ def test_register_image(mock_requests, client):
     )
     response.status_code = 400
     with pytest.raises(requests.exceptions.HTTPError):
-        client.post('/images', json=data)
+        client.post('/services/images', json=data)
 
 
 def test_get_images(mock_requests, client):
     response = create_response({'foo': 'bar'})
     mock_requests.get.return_value = response
-    client.get('/images')
+    client.get('/services/images')
     mock_requests.get.assert_called_once_with(
         '/images',
         params={'Active': True}
     )
     response.status_code = 400
     with pytest.raises(requests.exceptions.HTTPError):
-        client.get('/images')
+        client.get('/services/images')
 
 
 @mock.patch('web.app.PDSImage', autospec=True)
@@ -169,7 +169,7 @@ def test_display_image(MockPDSImage, client):
     png_output.getvalue.return_value = b'foo'
     image.get_png_output.return_value = png_output
     MockPDSImage.from_url.return_value = image
-    r = client.get('/display_image?url=bar')
+    r = client.get('/services/display_image?url=bar')
     assert r.status_code == 200
     assert r.headers['Content-Type'] == 'image/png'
     MockPDSImage.from_url.assert_called_once_with('bar')

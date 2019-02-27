@@ -6,6 +6,7 @@ from flask import (
     Flask,
     jsonify,
     request,
+    Blueprint,
     make_response,
     render_template,
 )
@@ -13,11 +14,16 @@ from flask import (
 from web.pdsimage import PDSImage
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
+
+services = Blueprint('services', __name__)
 
 API_URL = 'http://opp-app:80/api'
 
 
 @app.route('/')
+@app.route('/cameras')
+@app.route('/product_types')
 def index():
     return render_template('index.html')
 
@@ -48,31 +54,31 @@ def _get_resources(resource_name):
     return resources
 
 
-@app.route('/product_types', methods=['POST'])
+@services.route('/product_types', methods=['POST'])
 def create_product_type():
     product_type = _create_resource('product_types', True)
     return jsonify(data=product_type)
 
 
-@app.route('/product_types', methods=['GET'])
+@services.route('/product_types', methods=['GET'])
 def get_product_types():
     product_types = _get_resources('product_types')
     return jsonify(data=product_types)
 
 
-@app.route('/cameras', methods=['POST'])
+@services.route('/cameras', methods=['POST'])
 def create_camera():
     camera = _create_resource('cameras', False)
     return jsonify(data=camera)
 
 
-@app.route('/cameras', methods=['GET'])
+@services.route('/cameras', methods=['GET'])
 def get_cameras():
     cameras = _get_resources('cameras')
     return jsonify(data=cameras)
 
 
-@app.route('/images', methods=['POST'])
+@services.route('/images', methods=['POST'])
 def register_image():
     data = request.json
     sol = int(data['sol'])
@@ -94,7 +100,7 @@ def register_image():
     return jsonify(data=r.json())
 
 
-@app.route('/images', methods=['GET'])
+@services.route('/images', methods=['GET'])
 def get_images():
     params = {'Active': True}
     r = requests.get(f'{API_URL}/images', params=params)
@@ -102,10 +108,13 @@ def get_images():
     return jsonify(data=r.json())
 
 
-@app.route('/display_image', methods=['GET'])
+@services.route('/display_image', methods=['GET'])
 def display_image():
     image = PDSImage.from_url(request.args['url'])
     png_output = image.get_png_output()
     response = make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
     return response
+
+
+app.register_blueprint(services, url_prefix='/services')

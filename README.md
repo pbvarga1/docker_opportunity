@@ -24,6 +24,7 @@ Software/techniques/packages used so far.
       the database to test as if on a live server
 * [PostgreSQL](https://www.postgresql.org/docs/)
 * [Flask](http://flask.pocoo.org/)
+    * [Blueprints](http://flask.pocoo.org/docs/1.0/blueprints/)
 * [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/)
 * [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer)
 * [Angularjs](https://docs.angularjs.org/api)
@@ -31,6 +32,8 @@ Software/techniques/packages used so far.
     * [components](https://docs.angularjs.org/guide/component)
     * [routing](https://docs.angularjs.org/tutorial/step_09)
     * [services](https://docs.angularjs.org/api/ng/type/angular.Module#service)
+* Flask + Angular
+    * Routing to multiple pages handled by Angular through Flask
 * [pytest](https://docs.pytest.org/en/latest/contents.html)
     * [fixtures](https://docs.pytest.org/en/latest/fixture.html)
 * [mock](https://docs.python.org/3/library/unittest.mock.html)
