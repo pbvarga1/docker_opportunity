@@ -10,7 +10,7 @@
           <label class="col-form-label" for="prodType">Product Type</label>
         </div>
         <div class="col-lg-6">
-          <select ng-model="$ctrl.productType" class="form-control" id="prodType" ng-options="x as x for x in $ctrl.productTypes"></select>
+          <select ng-model="$ctrl.productType" class="form-control" id="prodType" ng-options="x.Name for x in $ctrl.productTypes"></select>
         </div>
         <div class="col-lg-3"></div>
       </div>
@@ -23,7 +23,7 @@
           <label class="col-form-label" for="camera">Camera</label>
         </div>
         <div class="col-lg-6">
-          <select ng-model="$ctrl.camera" class="form-control" id="camera" ng-options="x as x for x in $ctrl.cameras"></select>
+          <select ng-model="$ctrl.camera" class="form-control" id="camera" ng-options="x.Name for x in $ctrl.cameras"></select>
         </div>
         <div class="col-lg-3"></div>
       </div>
@@ -46,10 +46,10 @@
       <div class="row">
         <div class="col-lg-1"></div>
         <div class="col-lg-2">
-          <label class="col-form-label" for="imageName">Name</label>
+          <label class="col-form-label" for="sol">Sol</label>
         </div>
         <div class="col-lg-6">
-          <input type="text" class="form-control" id="imageName" ng-model="$ctrl.imageName">
+          <input type="number" class="form-control" id="sol" ng-model="$ctrl.sol">
         </div>
         <div class="col-lg-3"></div>
       </div>

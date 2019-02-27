@@ -11,7 +11,7 @@ angular.module('homeApp').component('createImageComponent', {
         $ctrl.$onInit = function() {
             $ctrl.productTypes = $ctrl.resolve.productTypes;
             $ctrl.cameras = $ctrl.resolve.cameras;
-            $ctrl.imageName = '';
+            $ctrl.sol = null;
             $ctrl.url = '';
             $ctrl.productType = '';
             $ctrl.camera = '';
@@ -21,10 +21,10 @@ angular.module('homeApp').component('createImageComponent', {
         $ctrl.ok = function(){
             $ctrl.close({
                 $value: {
-                    imageName: $ctrl.imageName,
+                    sol: $ctrl.sol,
                     url: $ctrl.url,
-                    productType: $ctrl.productType,
-                    camera: $ctrl.camera,
+                    productType: $ctrl.productType.ID,
+                    camera: $ctrl.camera.ID,
                     detatched: $ctrl.detatched,
                 }
             });
