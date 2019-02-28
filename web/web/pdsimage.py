@@ -82,7 +82,7 @@ class PDSImage:
         return (bands, lines, samples)
 
     @classmethod
-    def from_url(cls, url: str, detatched: bool=False) -> 'PDSImage':
+    def from_url(cls, url: str, detatched: bool = False) -> 'PDSImage':
         resp = requests.get(url)
         resp.raise_for_status()
         content = resp.content

@@ -1,5 +1,4 @@
 import posixpath
-from typing import Union
 
 import requests
 from flask import (

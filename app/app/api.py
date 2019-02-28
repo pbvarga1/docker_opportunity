@@ -57,7 +57,7 @@ def create_resource(Resource: Base, **kwargs) -> dict:
         )
 
 
-def update_resource(Resource: Base, ID: Optional[int]=None,
+def update_resource(Resource: Base, ID: Optional[int] = None,
                     **kwargs) -> dict:
     if ID is not None:
         resource = Resource.query.filter_by(ID=ID).first_or_404()
@@ -100,7 +100,7 @@ def delete_resource(Resource: Base, ID: int) -> dict:
     methods=['GET', 'POST', 'PUT', 'DELETE'],
 )
 def get_create_update_or_delete(resource: str,
-                                ID: Optional[int]=None) -> CodeResponse:
+                                ID: Optional[int] = None) -> CodeResponse:
     resources = {
         'product_types': ProductType,
         'images': Image,
