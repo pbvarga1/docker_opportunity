@@ -1,4 +1,5 @@
 import posixpath
+from typing import Union
 
 import requests
 from flask import (
@@ -6,6 +7,7 @@ from flask import (
     Flask,
     jsonify,
     request,
+    Response,
     Blueprint,
     make_response,
     render_template,
@@ -25,11 +27,11 @@ API_URL = 'http://opp-app:80/api'
 @app.route('/')
 @app.route('/cameras')
 @app.route('/product_types')
-def index():
+def index() -> Response:
     return render_template('index.html')
 
 
-def _create_resource(resource_name, is_upper):
+def _create_resource(resource_name: str, is_upper: bool) -> dict:
     url = f'{API_URL}/{resource_name}'
     try:
         name = request.json['name']
@@ -43,7 +45,7 @@ def _create_resource(resource_name, is_upper):
     return response.json()
 
 
-def _get_resources(resource_name):
+def _get_resources(resource_name: str) -> list:
     url = f'{API_URL}/{resource_name}'
     params = {'Active': True}
     response = requests.get(url, params=params)
@@ -56,31 +58,31 @@ def _get_resources(resource_name):
 
 
 @services.route('/product_types', methods=['POST'])
-def create_product_type():
+def create_product_type() -> Response:
     product_type = _create_resource('product_types', True)
     return jsonify(data=product_type)
 
 
 @services.route('/product_types', methods=['GET'])
-def get_product_types():
+def get_product_types() -> Response:
     product_types = _get_resources('product_types')
     return jsonify(data=product_types)
 
 
 @services.route('/cameras', methods=['POST'])
-def create_camera():
+def create_camera() -> Response:
     camera = _create_resource('cameras', False)
     return jsonify(data=camera)
 
 
 @services.route('/cameras', methods=['GET'])
-def get_cameras():
+def get_cameras() -> Response:
     cameras = _get_resources('cameras')
     return jsonify(data=cameras)
 
 
 @services.route('/images', methods=['POST'])
-def register_image():
+def register_image() -> Response:
     data = request.json
     sol = int(data['sol'])
     url = str(data['url'])
@@ -102,7 +104,7 @@ def register_image():
 
 
 @services.route('/images', methods=['GET'])
-def get_images():
+def get_images() -> Response:
     params = {'Active': True}
     r = requests.get(f'{API_URL}/images', params=params)
     r.raise_for_status()
@@ -110,7 +112,7 @@ def get_images():
 
 
 @services.route('/display_image', methods=['GET'])
-def display_image():
+def display_image() -> Response:
     rcache = get_rcache()
     image_cache = ImageCache(rcache)
     url = request.args['url']

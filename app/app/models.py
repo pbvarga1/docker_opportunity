@@ -1,19 +1,23 @@
+from typing import Any, Dict
+
 from app.app import db
 
+Model: Any = db.Model
 
-class Camera(db.Model):
+
+class Camera(Model):
     __tablename__ = 'cameras'
 
     Name = db.Column(db.String(10), unique=True)
     images = db.relationship('Image', backref='camera', lazy=True)
 
     @classmethod
-    def from_dict(cls, camera_dict):
+    def from_dict(cls, camera_dict: Dict[str, Any]) -> 'Camera':
         return cls(
             Name=camera_dict['Name']
         )
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         to_dict = super().to_dict()
         to_dict.update(
             {
@@ -22,25 +26,25 @@ class Camera(db.Model):
         )
         return to_dict
 
-    def update_from_dict(self, camera_dict):
+    def update_from_dict(self, camera_dict: Dict[str, Any]) -> None:
         super().update_from_dict(camera_dict)
         if 'Name' in camera_dict:
             self.Name = camera_dict['Name']
 
 
-class ProductType(db.Model):
+class ProductType(Model):
     __tablename__ = 'product_types'
 
     Name = db.Column(db.String(4), unique=True)
     images = db.relationship('Image', backref='product_type', lazy=True)
 
     @classmethod
-    def from_dict(cls, type_dict):
+    def from_dict(cls, type_dict: Dict[str, Any]) -> 'ProductType':
         return cls(
             Name=type_dict['Name']
         )
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         to_dict = super().to_dict()
         to_dict.update(
             {
@@ -49,13 +53,13 @@ class ProductType(db.Model):
         )
         return to_dict
 
-    def update_from_dict(self, type_dict):
+    def update_from_dict(self, type_dict: Dict[str, Any]) -> None:
         super().update_from_dict(type_dict)
         if 'Name' in type_dict:
             self.Name = type_dict['Name']
 
 
-class Image(db.Model):
+class Image(Model):
     __tablename__ = 'images'
 
     Name = db.Column(db.String(31), unique=True)
@@ -74,7 +78,7 @@ class Image(db.Model):
     )
 
     @classmethod
-    def from_dict(cls, image_dict):
+    def from_dict(cls, image_dict: Dict[str, Any]) -> 'Image':
         return cls(
             Name=str(image_dict['Name']),
             URL=str(image_dict['URL']),
@@ -84,7 +88,7 @@ class Image(db.Model):
             ProductTypeID=int(image_dict['ProductTypeID']),
         )
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         to_dict = super().to_dict()
         to_dict.update(
             {
@@ -100,7 +104,7 @@ class Image(db.Model):
         )
         return to_dict
 
-    def update_from_dict(self, image_dict):
+    def update_from_dict(self, image_dict: Dict[str, Any]) -> None:
         super().update_from_dict(image_dict)
         if 'Name' in image_dict:
             self.Name = image_dict['Name']
