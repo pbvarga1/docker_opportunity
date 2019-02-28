@@ -1,8 +1,11 @@
-from flask import abort, jsonify, request
+from typing import Optional, Tuple, Union, List, Callable, Any, Dict
+
+from flask import abort, jsonify, request, Response
 
 from app.app import (
     db,
     app,
+    Base
 )
 from app.models import (
     Image,
@@ -10,8 +13,10 @@ from app.models import (
     ProductType,
 )
 
+CodeResponse = Tuple[Response, int]
 
-def get_data_from_json():
+
+def get_data_from_json() -> dict:
     data = request.get_json()
     if data is None:
         abort(
@@ -21,12 +26,12 @@ def get_data_from_json():
     return data
 
 
-def get_query_string_params():
+def get_query_string_params() -> dict:
     params = {key: val for key, val in request.args.items()}
     return params
 
 
-def get_resource(Resource, ID):
+def get_resource(Resource: Base, ID: int) -> Union[dict, List[dict]]:
     if ID is None:
         params = get_query_string_params()
         items = [
@@ -37,7 +42,7 @@ def get_resource(Resource, ID):
         return Resource.query.filter_by(ID=ID).first_or_404().to_dict()
 
 
-def create_resource(Resource, **kwargs):
+def create_resource(Resource: Base, **kwargs) -> dict:
     data = get_data_from_json()
     try:
         resource = Resource.from_dict(data)
@@ -52,7 +57,8 @@ def create_resource(Resource, **kwargs):
         )
 
 
-def update_resource(Resource, ID=None, **kwargs):
+def update_resource(Resource: Base, ID: Optional[int] = None,
+                    **kwargs) -> dict:
     if ID is not None:
         resource = Resource.query.filter_by(ID=ID).first_or_404()
     else:
@@ -74,7 +80,7 @@ def update_resource(Resource, ID=None, **kwargs):
     return resource.to_dict()
 
 
-def delete_resource(Resource, ID):
+def delete_resource(Resource: Base, ID: int) -> dict:
     if ID is None:
         abort(400, 'Delete must have an ID')
     resource = Resource.query.filter_by(ID=ID).first_or_404()
@@ -93,12 +99,14 @@ def delete_resource(Resource, ID):
     '/api/<string:resource>',
     methods=['GET', 'POST', 'PUT', 'DELETE'],
 )
-def get_create_update_or_delete(resource, ID=None):
+def get_create_update_or_delete(resource: str,
+                                ID: Optional[int] = None) -> CodeResponse:
     resources = {
         'product_types': ProductType,
         'images': Image,
         'cameras': Camera,
     }
+    methods: Dict[str, Tuple[Callable[..., Any], int]]
     methods = {
         'GET': (get_resource, 200),
         'POST': (create_resource, 201),
@@ -109,5 +117,8 @@ def get_create_update_or_delete(resource, ID=None):
     if not Resource:
         abort(404, f'Could not find resource {resource}')
 
+    method: Callable[..., Any]
+    status_code: int
     method, status_code = methods[request.method]
-    return jsonify(method(Resource, ID=ID)), status_code
+    result: Union[dict, list] = method(Resource, ID=ID)
+    return jsonify(result), status_code

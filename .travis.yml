@@ -11,7 +11,7 @@ stages:
   - tests
 
 env:
-  - COVERALLS_PARALLEL=true DOCKER_IP='127.0.0.1'
+  - COVERALLS_PARALLEL=true DOCKER_IP='127.0.0.1' MYPYPATH=$PWD/stubs
 
 install:
   - pip install -r requirements.txt
@@ -22,12 +22,14 @@ jobs:
   include:
     - stage: "tests"
       script:
-        - pytest app/tests -v --cov=app/app
         - flake8 app/
+        - mypy app/app/ 
+        - pytest app/tests -v --cov=app/app
     -
       script:
-        - pytest web/tests -v --cov=web/web
         - flake8 web/
+        - mypy web/web/ 
+        - pytest web/tests -v --cov=web/web
 
 after_success:
   - coveralls

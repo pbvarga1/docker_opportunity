@@ -1,10 +1,13 @@
 from io import BytesIO
+from typing import Tuple
 
 import pvl
 import requests
-import numpy as np
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import numpy as np  # type: ignore
+from matplotlib.figure import Figure  # type: ignore
+from matplotlib.backends.backend_agg import (  # type: ignore
+    FigureCanvasAgg as FigureCanvas,
+)
 
 
 class PDSImage:
@@ -61,24 +64,25 @@ class PDSImage:
     }
 
     @staticmethod
-    def _get_start_byte(label):
+    def _get_start_byte(label: pvl.PVLModule) -> int:
         record_bytes = label['RECORD_BYTES']
         im_pointer = label['^IMAGE']
         if isinstance(im_pointer, int):
             return (im_pointer - 1) * record_bytes
-
-        if isinstance(im_pointer, pvl.Units) and im_pointer.units == 'BYTES':
+        elif isinstance(im_pointer, pvl.Units) and im_pointer.units == 'BYTES':
             return im_pointer.value
+        else:
+            raise ValueError('label["^IMAGE"] should be int or pvl.Units')
 
     @staticmethod
-    def _get_shape(label):
+    def _get_shape(label: pvl.PVLModule) -> Tuple[int, int, int]:
         samples = label['IMAGE']['LINE_SAMPLES']
         lines = label['IMAGE']['LINES']
         bands = label['IMAGE']['BANDS']
         return (bands, lines, samples)
 
     @classmethod
-    def from_url(cls, url, detatched=False):
+    def from_url(cls, url: str, detatched: bool = False) -> 'PDSImage':
         resp = requests.get(url)
         resp.raise_for_status()
         content = resp.content
@@ -102,40 +106,37 @@ class PDSImage:
         data = data.reshape(shape).copy()
         return cls(data, label)
 
-    def __init__(self, data, label):
+    def __init__(self, data: np.ndarray, label: pvl.PVLModule):
         self._label = label
         self._data = data
 
     @property
-    def data(self):
+    def data(self) -> np.ndarray:
         return self._data.copy()
 
     @property
-    def label(self):
+    def label(self) -> pvl.PVLModule:
         return self._label.copy()
 
     @property
-    def bands(self):
+    def bands(self) -> int:
         if len(self._data.shape) == 3:
             return self._data.shape[0]
         else:
             return 1
 
     @property
-    def image(self):
+    def image(self) -> np.ndarray:
         if self.bands == 1:
             return self.data.squeeze()
         elif self.bands == 3:
             return np.dstack(self.data)
 
-    def get_png_output(self):
+    def get_png_output(self) -> BytesIO:
         fig = Figure()
         ax = fig.add_subplot(111)
         fig.patch.set_visible(False)
-        if self.bands == 1:
-            cmap = 'gray'
-        else:
-            cmap = None
+        cmap = 'gray' if self.bands == 1 else None
         ax.imshow(self.image, cmap=cmap)
         ax.axis('off')
         canvas = FigureCanvas(fig)

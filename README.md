@@ -47,6 +47,9 @@ Software/techniques/packages used so far.
 * [redis](https://redis.io/)
     * [redis-py](https://redis-py.readthedocs.io/en/latest/)
     * [redis hashes](https://redis.io/topics/data-types#hashes)
+* [Type Hints](https://www.python.org/dev/peps/pep-0484/)
+    * [Python typing](https://docs.python.org/3.6/library/typing.html)
+    * [Static Type Checking with Mypy](https://www.python.org/dev/peps/pep-0484/)
 
 
 ## Quick Start
