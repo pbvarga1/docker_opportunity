@@ -18,8 +18,7 @@ stages:
   - tests
 
 env:
-  - COVERALLS_PARALLEL=true
-  - DOCKER_IP='127.0.0.1'
+  - COVERALLS_PARALLEL=true DOCKER_IP='127.0.0.1'
 
 install:
   - pip install -r requirements.txt
