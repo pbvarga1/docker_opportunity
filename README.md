@@ -21,7 +21,8 @@ Software/techniques/packages used so far.
 
 * [Docker](https://docs.docker.com/)
     * Testing with Docker: Creating a temporary database in docker and using
-      the database to test as if on a live server
+      the database to test as if on a live server; Creating a redis server and
+      testing against that.
 * [PostgreSQL](https://www.postgresql.org/docs/)
 * [Flask](http://flask.pocoo.org/)
     * [Blueprints](http://flask.pocoo.org/docs/1.0/blueprints/)
@@ -43,6 +44,9 @@ Software/techniques/packages used so far.
 * [python packaging](https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py)
 * [yarn](https://yarnpkg.com/en/)
     * js package management in general
+* [redis](https://redis.io/)
+    * [redis-py](https://redis-py.readthedocs.io/en/latest/)
+    * [redis hashes](https://redis.io/topics/data-types#hashes)
 
 
 ## Quick Start
