@@ -74,7 +74,7 @@ $ docker-compose up
 Which will build the images and run the docker containers. If you are using
 dockertoolbox, then the host will be ``192.168.99.100``, otherwise it will be
 the local host ``127.0.0.1``. In the examples ahead, I assume the host will
-be ``127.0.0.1``. In your browser go to ``http://192.168.99.100:5002/`` to
+be ``127.0.0.1``. In your browser go to ``http://127.0.0.1:5002/`` to
 see the home web page:
 
 ![home page](homepage.jpg)
