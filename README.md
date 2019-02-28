@@ -53,8 +53,14 @@ Software/techniques/packages used so far.
 
 If you want to use this project for your own learning exercises, fork the repo
 to your own github account and then clone your forked repo to your computer.
-Make sure docker is installed and running. From the top directory
-``oportunity``, run:
+Make sure docker is installed and running. If you are **not** using docker
+toolbox, set the following environment envariable:
+
+```shell
+$ export DOCKER_IP='127.0.0.1'
+```
+
+ From the top directory ``oportunity``, run:
 
 ```shell
 $ docker-compose up
@@ -66,7 +72,7 @@ the local host ``127.0.0.1``. In the examples ahead, I assume the host will
 be ``127.0.0.1``. In your browser go to ``http://192.168.99.100:5002/`` to
 see the home web page:
 
-![home page][homepage.jpg]
+![home page](homepage.jpg)
 
 The first two links allow you to register product types (i.e. EDR, RDR) and
 cameras (i.e. pancam). The third link is where you will find images to
