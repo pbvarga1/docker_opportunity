@@ -50,6 +50,8 @@ Software/techniques/packages used so far.
 * [Type Hints](https://www.python.org/dev/peps/pep-0484/)
     * [Python typing](https://docs.python.org/3.6/library/typing.html)
     * [Static Type Checking with Mypy](https://www.python.org/dev/peps/pep-0484/)
+    * [Stub Files](https://www.python.org/dev/peps/pep-0484/#stub-files)
+        * See also [Mypy Stubs](https://mypy.readthedocs.io/en/latest/stubs.html)
 
 
 ## Quick Start
