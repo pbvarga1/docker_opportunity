@@ -1,4 +1,5 @@
 import json
+from time import sleep
 from unittest import mock
 
 import pytest
@@ -6,7 +7,7 @@ import requests
 from flask import Response
 
 from web import app
-from web.pdsimage import PDSImage
+from web.redis_cache import ImageCache
 app.app.config['TESTING'] = True
 
 
@@ -163,14 +164,21 @@ def test_get_images(mock_requests, client):
 
 
 @mock.patch('web.app.PDSImage', autospec=True)
-def test_display_image(MockPDSImage, client):
-    image = mock.create_autospec(PDSImage, instance=True)
-    png_output = mock.MagicMock()
-    png_output.getvalue.return_value = b'foo'
-    image.get_png_output.return_value = png_output
+def test_display_image(MockPDSImage, client, rcache, image):
     MockPDSImage.from_url.return_value = image
-    r = client.get('/services/display_image?url=bar')
+    r = client.get('/services/display_image?url=path/image.img')
     assert r.status_code == 200
     assert r.headers['Content-Type'] == 'image/png'
-    MockPDSImage.from_url.assert_called_once_with('bar')
-    image.get_png_output.assert_called_once_with()
+    MockPDSImage.from_url.assert_called_once_with('path/image.img')
+    assert image.get_png_output().getvalue() == r.data
+    image_cache = ImageCache(rcache)
+    assert 'image.img' in image_cache
+    time_stamp = image_cache.get_time('image.img')
+    sleep(1)
+    r = client.get('/services/display_image?url=path/image.img')
+    assert r.status_code == 200
+    assert r.headers['Content-Type'] == 'image/png'
+    # Make sure not called again
+    assert MockPDSImage.from_url.call_count == 1
+    assert image.get_png_output().getvalue() == r.data
+    assert time_stamp != image_cache.get_time('image.img')
