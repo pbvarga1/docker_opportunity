@@ -2,45 +2,9 @@ from io import BytesIO
 from unittest import mock
 
 import pvl
-import pytest
 import numpy as np
 
 from web import pdsimage
-
-
-@pytest.fixture
-def label():
-    label = pvl.PVLModule({
-        'RECORD_BYTES': 3,
-        '^IMAGE': 59,
-        'IMAGE': {
-            'LINE_SAMPLES': 4,
-            'LINES': 2,
-            'BANDS': 3,
-            'SAMPLE_TYPE': 'MSB_INTEGER',
-            'SAMPLE_BITS': 16,
-        },
-    })
-    return label
-
-
-DTYPE = np.dtype('>i2')
-
-
-@pytest.fixture
-def image(label):
-    data = np.arange(1, 25).reshape((3, 2, 4))
-    data = data.astype(DTYPE)
-    im = pdsimage.PDSImage(data, label)
-    return im
-
-
-@pytest.fixture
-def gray_image(label):
-    data = np.arange(1, 9).reshape((1, 2, 4))
-    data = data.astype(DTYPE)
-    im = pdsimage.PDSImage(data, label)
-    return im
 
 
 def test_get_start_byte(label):
