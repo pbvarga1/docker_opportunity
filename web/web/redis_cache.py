@@ -1,3 +1,4 @@
+import os
 import abc
 import json
 from datetime import datetime
@@ -10,11 +11,11 @@ import numpy as np
 from web.pdsimage import PDSImage
 
 REDIS_PORT = 6379
-REDIS_HOST = '192.168.99.100'
 
 
 def get_rcache():
-    rcache = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
+    redis_host = os.environ.get('DOCKER_IP', '192.168.99.100')
+    rcache = redis.Redis(host=redis_host, port=REDIS_PORT)
     return rcache
 
 
