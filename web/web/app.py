@@ -12,6 +12,7 @@ from flask import (
 )
 
 from web.pdsimage import PDSImage
+from web.redis_cache import ImageCache, get_rcache
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -110,7 +111,16 @@ def get_images():
 
 @services.route('/display_image', methods=['GET'])
 def display_image():
-    image = PDSImage.from_url(request.args['url'])
+    rcache = get_rcache()
+    image_cache = ImageCache(rcache)
+    url = request.args['url']
+    name = posixpath.basename(url)
+    if name in image_cache:
+        image = image_cache[name]
+        image_cache.set_time(name)
+    else:
+        image = PDSImage.from_url(url)
+        image_cache[name] = image
     png_output = image.get_png_output()
     response = make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
