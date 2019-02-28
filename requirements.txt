@@ -5,3 +5,5 @@ coveralls==1.6.0
 pytest-cov==2.6.1
 flake8==3.7.6
 mypy==0.670
+sphinx==1.8.4
+sphinx-rtd-theme==0.4.3
