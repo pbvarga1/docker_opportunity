@@ -42,5 +42,5 @@ class TestingConfig(Config):
         name='testing',
         password='testpass',
         image=host,
-        port=5432
+        port=5434
     )

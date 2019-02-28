@@ -21,7 +21,7 @@ def docker_container():
     )
     container = client.containers.run(
         image='app-test',
-        ports={'5432': '5432'},
+        ports={'5432/tcp': '5434'},
         detach=True,
         publish_all_ports=True,
     )
