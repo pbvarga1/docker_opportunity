@@ -1,7 +1,11 @@
-# Opportunity App
+Opportunity App
+===============
 
-[![Build Status](https://travis-ci.com/pbvarga1/opportunity.svg?branch=master)](https://travis-ci.com/pbvarga1/opportunity#)
-[![Coverage Status](https://coveralls.io/repos/github/pbvarga1/opportunity/badge.svg?branch=master)](https://coveralls.io/github/pbvarga1/opportunity?branch=master)
+.. image:: https://travis-ci.com/pbvarga1/opportunity.svg?branch=master
+    :target: https://travis-ci.com/pbvarga1/opportunity
+.. image:: https://coveralls.io/repos/github/pbvarga1/opportunity/badge.svg?branch=master
+    :target: https://coveralls.io/github/pbvarga1/opportunity?branch=master
+
 
 I want to play around with some programming techniques (listed below). This
 repo can be used as examples of using these techniques (although I do not
@@ -15,46 +19,64 @@ are extracted into different applications called ``app`` and ``web``. See the
 issues for what I plan to do going forward.
 
 
-## Software
+Software
+--------
 
 Software/techniques/packages used so far.
 
-* [Docker](https://docs.docker.com/)
+* `Docker <https://docs.docker.com/>`_
+
     * Testing with Docker: Creating a temporary database in docker and using
       the database to test as if on a live server; Creating a redis server and
       testing against that.
-* [PostgreSQL](https://www.postgresql.org/docs/)
-* [Flask](http://flask.pocoo.org/)
-    * [Blueprints](http://flask.pocoo.org/docs/1.0/blueprints/)
-* [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/)
-* [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer)
-* [Angularjs](https://docs.angularjs.org/api)
-    * [angular-ui bootstrap modals](https://angular-ui.github.io/bootstrap/#!#modal)
-    * [components](https://docs.angularjs.org/guide/component)
-    * [routing](https://docs.angularjs.org/tutorial/step_09)
-    * [services](https://docs.angularjs.org/api/ng/type/angular.Module#service)
+
+* `PostgreSQL <https://www.postgresql.org/docs/>`_
+* `Flask <http://flask.pocoo.org/>`_
+
+    * `Blueprints <http://flask.pocoo.org/docs/1.0/blueprints/>`_
+
+* `Flask-SQLAlchemy <http://flask-sqlalchemy.pocoo.org/2.3/>`_
+* `REST API <https://en.wikipedia.org/wiki/Representational_state_transfer>`_
+* `Angularjs <https://docs.angularjs.org/api>`_
+
+    * `angular-ui bootstrap modals <https://angular-ui.github.io/bootstrap/#!#modal>`_
+    * `components <https://docs.angularjs.org/guide/component>`_
+    * `routing <https://docs.angularjs.org/tutorial/step_09>`_
+    * `services <https://docs.angularjs.org/api/ng/type/angular.Module#service>`_
+
 * Flask + Angular
+
     * Routing to multiple pages handled by Angular through Flask
-* [pytest](https://docs.pytest.org/en/latest/contents.html)
-    * [fixtures](https://docs.pytest.org/en/latest/fixture.html)
-* [mock](https://docs.python.org/3/library/unittest.mock.html)
-* [Travis-CI](https://docs.travis-ci.com/)
-* [coveralls (code coverage)](https://docs.coveralls.io/)
-* [flake8 (pep8 style guide)](http://flake8.pycqa.org/en/latest/)
-* [python packaging](https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py)
-* [yarn](https://yarnpkg.com/en/)
+
+* `pytest <https://docs.pytest.org/en/latest/contents.html>`_
+
+    * `fixtures <https://docs.pytest.org/en/latest/fixture.html>`_
+
+* `mock <https://docs.python.org/3/library/unittest.mock.html>`_
+* `Travis-CI <https://docs.travis-ci.com/>`_
+* `coveralls (code coverage) <https://docs.coveralls.io/>`_
+* `flake8 (pep8 style guide) <http://flake8.pycqa.org/en/latest/>`_
+* `python packaging <https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py>`_
+* `yarn <https://yarnpkg.com/en/>`_
+
     * js package management in general
-* [redis](https://redis.io/)
-    * [redis-py](https://redis-py.readthedocs.io/en/latest/)
-    * [redis hashes](https://redis.io/topics/data-types#hashes)
-* [Type Hints](https://www.python.org/dev/peps/pep-0484/)
-    * [Python typing](https://docs.python.org/3.6/library/typing.html)
-    * [Static Type Checking with Mypy](https://www.python.org/dev/peps/pep-0484/)
-    * [Stub Files](https://www.python.org/dev/peps/pep-0484/#stub-files)
-        * See also [Mypy Stubs](https://mypy.readthedocs.io/en/latest/stubs.html)
+
+* `redis <https://redis.io/>`_
+
+    * `redis-py <https://redis-py.readthedocs.io/en/latest/>`_
+    * `redis hashes <https://redis.io/topics/data-types#hashes>`_
+
+* `Type Hints <https://www.python.org/dev/peps/pep-0484/>`_
+
+    * `Python typing <https://docs.python.org/3.6/library/typing.html>`_
+    * `Static Type Checking with Mypy <https://www.python.org/dev/peps/pep-0484/>`_
+    * `Stub Files <https://www.python.org/dev/peps/pep-0484/#stub-files>`_
+
+        * See also `Mypy Stubs <https://mypy.readthedocs.io/en/latest/stubs.html>`_
 
 
-## Quick Start
+Quick Start
+-----------
 
 If you want to use this project for your own learning exercises, fork the repo
 to your own github account and then clone your forked repo to your computer.
@@ -77,7 +99,7 @@ the local host ``127.0.0.1``. In the examples ahead, I assume the host will
 be ``127.0.0.1``. In your browser go to ``http://127.0.0.1:5002/`` to
 see the home web page:
 
-![home page](homepage.jpg)
+.. image:: homepage.jpg
 
 The first two links allow you to register product types (i.e. EDR, RDR) and
 cameras (i.e. pancam). The third link is where you will find images to
