@@ -1,0 +1,164 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is documentation for the API of the Opportunity appliation.",
+        "version": "0.1.0",
+        "title": "Opportunity",
+        "License": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "host": "192.168.99.100:5001",
+    "basePath": "/api",
+    "tags": [
+        {
+            "name": "images",
+            "description": "registered pds images for the Opportunity rover"
+        },
+        {
+            "name": "product_types",
+            "description": "registered product types for the images"
+        },
+        {
+            "name": "cameras",
+            "description": "Names of cameras from which the images are taken"
+        }
+    ],
+    "paths": {
+        "/images": {
+            "get": {
+                "tags": [
+                    "images"
+                ],
+                "summary": "Get all images",
+                "description": "Get all registered images",
+                "operationID": "getImages",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "headers": [
+                            {
+                                "Access-Control-Allow-Origin": {
+                                    "type": "string",
+                                    "default": "*"
+                                }
+                            }
+                        ],
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Image"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Failed to load images"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Image": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Active": {
+                    "type": "boolean"
+                },
+                "Created": {
+                    "type": "string",
+                    "format": "date-time",
+                },
+                "Updated": {
+                    "type": "string",
+                    "format": "date-time",
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Url": {
+                    "type": "string"
+                },
+                "Sol": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "DetatchedLabel": {
+                    "type": "boolean"
+                },
+                "CameraID": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "ProductID": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "cameras": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Camera"
+                    }
+                },
+                "product_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ProductType"
+                    }
+                }
+            }
+        },
+        "ProductType": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Active": {
+                    "type": "boolean"
+                },
+                "Created": {
+                    "type": "string",
+                    "format": "date-time",
+                },
+                "Updated": {
+                    "type": "string",
+                    "format": "date-time",
+                },
+                "Name": {
+                    "type": "string"
+                }
+            }
+        },
+        "Camera": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Active": {
+                    "type": "boolean"
+                },
+                "Created": {
+                    "type": "string",
+                    "format": "date-time",
+                },
+                "Updated": {
+                    "type": "string",
+                    "format": "date-time",
+                },
+                "Name": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
