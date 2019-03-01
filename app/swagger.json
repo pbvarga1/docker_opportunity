@@ -578,7 +578,7 @@
                         "name": "ID",
                         "in": "path",
                         "description": "ID of camera",
-                        "required": false,
+                        "required": true,
                         "type": "integer",
                         "format": "int64",
                     },
