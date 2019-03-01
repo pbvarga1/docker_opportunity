@@ -32,6 +32,10 @@ class PDSImage:
     (1, 272, 361)
     >>> image.image.shape
     (272, 361)
+    >>> image.image[:3, :3]
+    array([[1566, 1586, 1586],
+       [1586, 1606, 1606],
+       [1586, 1606, 1647]], dtype=int16)
     >>> image.label['MISSION_NAME']
     MARS EXPLORATION ROVER
     >>> image.label['PRODUCT_ID']
@@ -178,6 +182,13 @@ class PDSImage:
     def __init__(self, data: np.ndarray, label: pvl.PVLModule):
         self._label = label
         self._data = data
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.product_id})'
+
+    @property
+    def product_id(self):
+        return self._label['PRODUCT_ID']
 
     @property
     def data(self) -> np.ndarray:

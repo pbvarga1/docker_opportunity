@@ -1,5 +1,6 @@
 from datetime import datetime
 from unittest.mock import patch
+from collections import KeysView, ValuesView, ItemsView
 
 import redis
 import pytest
@@ -87,3 +88,43 @@ class TestImageCache:
         cached_image = image_cache['foo']
         assert isinstance(cached_image, pdsimage.PDSImage)
         np.testing.assert_array_equal(image.data, cached_image.data)
+
+    def test__iter__(self, image, gray_image, image_cache):
+        image_cache['foo'] = image
+        image_cache['bar'] = gray_image
+        expected_keys = ['bar', 'foo']
+        assert list(sorted(iter(image_cache))) == expected_keys
+
+    def test_keys(self, image, gray_image, image_cache):
+        image_cache['foo'] = image
+        image_cache['bar'] = gray_image
+        expected_keys = ['bar', 'foo']
+        assert isinstance(image_cache.keys(), KeysView)
+        assert list(sorted(image_cache.keys())) == expected_keys
+
+    def test_values(self, image, gray_image, image_cache):
+        image._label['id'] = 42
+        gray_image._label['id'] = 24
+        image_cache['foo'] = image
+        image_cache['bar'] = gray_image
+        ids = []
+        assert isinstance(image_cache.values(), ValuesView)
+        for value in image_cache.values():
+            assert isinstance(value, pdsimage.PDSImage)
+            ids.append(value.label['id'])
+        assert list(sorted(ids)) == [24, 42]
+
+    def test_items(self, image, gray_image, image_cache):
+        image._label['id'] = 42
+        gray_image._label['id'] = 24
+        image_cache['foo'] = image
+        image_cache['bar'] = gray_image
+        ids = []
+        expected_keys = ['bar', 'foo']
+        assert isinstance(image_cache.items(), ItemsView)
+        for key, value in image_cache.items():
+            assert isinstance(value, pdsimage.PDSImage)
+            assert key in expected_keys
+            ids.append(value.label['id'])
+
+        assert list(sorted(ids)) == [24, 42]

@@ -58,11 +58,12 @@ def rcache(docker_container):
     cache.flushall()
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def label():
     label = pvl.PVLModule({
         'RECORD_BYTES': 3,
         '^IMAGE': 59,
+        'PRODUCT_ID': 'testimg',
         'IMAGE': {
             'LINE_SAMPLES': 4,
             'LINES': 2,
@@ -77,17 +78,17 @@ def label():
 DTYPE = np.dtype('>i2')
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def image(label):
     data = np.arange(1, 25).reshape((3, 2, 4))
     data = data.astype(DTYPE)
-    im = pdsimage.PDSImage(data, label)
+    im = pdsimage.PDSImage(data, label.copy())
     return im
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def gray_image(label):
     data = np.arange(1, 9).reshape((1, 2, 4))
     data = data.astype(DTYPE)
-    im = pdsimage.PDSImage(data, label)
+    im = pdsimage.PDSImage(data, label.copy())
     return im
