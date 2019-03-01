@@ -19,6 +19,17 @@
 
 # -- Project information -----------------------------------------------------
 
+import os
+import shutil
+
+DOCS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+if not os.path.exists(os.path.join(DOCS_DIR, 'homepage.jpg')):
+    shutil.copy(
+        src=os.path.join(os.path.dirname(DOCS_DIR), 'homepage.jpg'),
+        dst=DOCS_DIR,
+    )
+
 project = 'opportunity'
 copyright = '2019, Perry Vargas'
 author = 'Perry Vargas'
@@ -43,6 +54,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'numpydoc',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -78,7 +90,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -182,4 +194,11 @@ epub_exclude_files = ['search.html']
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/', None),
+    'numpy': ('https://numpy.readthedocs.io/en/latest/', None),
+    'pvl': ('https://pvl.readthedocs.io/en/latest/', None),
+    'redis': ('https://redis-py.readthedocs.io/en/latest/', None)
+}
+autodoc_member_order = 'bysource'
+numpydoc_show_class_members = False

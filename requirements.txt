@@ -7,3 +7,4 @@ flake8==3.7.6
 mypy==0.670
 sphinx==1.8.4
 sphinx-rtd-theme==0.4.3
+numpydoc==0.8.0
