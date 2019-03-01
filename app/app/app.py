@@ -34,8 +34,8 @@ class Base(Model):
     def to_dict(self) -> Dict[str, Any]:
         return {
             'ID': self.ID,
-            'Created': str(self.Created),
-            'Updated': str(self.Updated),
+            'Created': self.Created.isoformat(),
+            'Updated': self.Updated.isoformat(),
             'Active': self.Active,
         }
 
