@@ -10,6 +10,12 @@ Welcome to opportunity's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   web
+
+
+
+.. include:: ../README.rst
+
 
 
 Indices and tables
