@@ -4,7 +4,7 @@
         "description": "This is documentation for the API of the Opportunity appliation.",
         "version": "0.1.0",
         "title": "Opportunity",
-        "License": {
+        "license": {
             "name": "MIT",
             "url": "https://opensource.org/licenses/MIT"
         }
@@ -33,19 +33,10 @@
                 ],
                 "summary": "Get all images",
                 "description": "Get all registered images",
-                "operationID": "getImages",
                 "parameters": [],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
-                        "headers": [
-                            {
-                                "Access-Control-Allow-Origin": {
-                                    "type": "string",
-                                    "default": "*"
-                                }
-                            }
-                        ],
                         "schema": {
                             "type": "array",
                             "items": {
@@ -53,9 +44,604 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Failed to load images"
+                }
+            },
+            "post": {
+                "tags": [
+                    "images"
+                ],
+                "summary": "Register a new image",
+                "description": "",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "An image objected to be registered",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                },
+                                "URL": {
+                                    "type": "string"
+                                },
+                                "Sol": {
+                                    "type": "integer",
+                                    "format": "int32"
+                                },
+                                "DetatchedLabel": {
+                                    "type": "boolean",
+                                    "default": false
+                                },
+                                "CameraID": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "ProductTypeID": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                            }
+                        }
                     }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created new image",
+                        "schema": {
+                            "$ref": "#/definitions/Image"
+                        }
+                    }
+                }
+            }
+        },
+        "/product_types": {
+            "get": {
+                "tags": [
+                    "product_types"
+                ],
+                "summary": "Get all product types",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ProductType"
+                            }
+                        }
+                    },
+                }
+            },
+            "post": {
+                "tags": [
+                    "product_types"
+                ],
+                "summary": "Register a new product type",
+                "description": "",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "A product type to be registered",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                },
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created new product type",
+                        "schema": {
+                            "$ref": "#/definitions/ProductType"
+                        }
+                    }
+                }
+            }
+        },
+        "/cameras": {
+            "get": {
+                "tags": [
+                    "cameras"
+                ],
+                "summary": "Get all cameras",
+                "description": "",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Camera"
+                            }
+                        }
+                    },
+                }
+            },
+            "post": {
+                "tags": [
+                    "cameras"
+                ],
+                "summary": "Register a new camera",
+                "description": "",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "A camera to be registered",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                },
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created new camera",
+                        "schema": {
+                            "$ref": "#/definitions/Camera"
+                        }
+                    }
+                }
+            }
+        },
+        "/images/{ID}": {
+            "get": {
+                "tags": [
+                    "images"
+                ],
+                "summary": "Find image by ID",
+                "description": "Return a single image",
+                "operationId": "getImageById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ID",
+                        "in": "path",
+                        "description": "ID of image",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64",
+                    },
+                    {
+                        "name": "Active",
+                        "in": "query",
+                        "description": "Name of the image",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "Name",
+                        "in": "query",
+                        "description": "Name of the image",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "URL",
+                        "in": "query",
+                        "description": "URL of the image",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Sol",
+                        "in": "query",
+                        "description": "Sol of the image",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "DetatchedLabel",
+                        "in": "query",
+                        "description": "Whether or not the image has a detatched label",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "CameraID",
+                        "in": "query",
+                        "description": "Camera ID of the image",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64",
+                    },
+                    {
+                        "name": "ProductTypeID",
+                        "in": "query",
+                        "description": "Product Type ID of the image",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64",
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Image"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find image with the ID"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "images"
+                ],
+                "summary": "Update image by ID",
+                "description": "Update a single image",
+                "operationId": "updateImageById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ID",
+                        "in": "path",
+                        "description": "ID of image",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64",
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "An image objected to be registered",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                },
+                                "URL": {
+                                    "type": "string"
+                                },
+                                "Sol": {
+                                    "type": "integer",
+                                    "format": "int32"
+                                },
+                                "DetatchedLabel": {
+                                    "type": "boolean",
+                                    "default": false
+                                },
+                                "CameraID": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "ProductTypeID": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Image"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find image with the ID or query params"
+                    },
+                    "400": {
+                        "description": "Query params found too many resources"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "images"
+                ],
+                "summary": "Delete an image by ID",
+                "description": "Deleting just means setting Active to false",
+                "operationId": "deleteImageById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ID",
+                        "in": "path",
+                        "description": "ID of image",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64",
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Image"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find image with the ID"
+                    },
+                }
+            }
+        },
+        "/product_types/{ID}": {
+            "get": {
+                "tags": [
+                    "product_types"
+                ],
+                "summary": "Find a Product Type by ID",
+                "description": "Return a product type",
+                "operationId": "getProductTypeById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ID",
+                        "in": "path",
+                        "description": "ID of product type",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64",
+                    },
+                    {
+                        "name": "Active",
+                        "in": "query",
+                        "description": "Whether or not the product type is active",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "Name",
+                        "in": "query",
+                        "description": "Name of the product type",
+                        "required": false,
+                        "type": "string"
+                    },
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/ProductType"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find product type with the ID"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "product_types"
+                ],
+                "summary": "Update Product Type by ID",
+                "description": "Update a single product type",
+                "operationId": "updateProductTypeById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ID",
+                        "in": "path",
+                        "description": "ID of product type",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64",
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "A product type to be registered",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                },
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/ProductType"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find product type with the ID or query params"
+                    },
+                    "400": {
+                        "description": "Query params found too many resources"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "product_types"
+                ],
+                "summary": "Delete an product type by ID",
+                "description": "Deleting just means setting Active to false",
+                "operationId": "deleteProductTypeById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ID",
+                        "in": "path",
+                        "description": "ID of product type",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64",
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/ProductType"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find product type with the ID"
+                    },
+                }
+            }
+        },
+        "/cameras/{ID}": {
+            "get": {
+                "tags": [
+                    "cameras"
+                ],
+                "summary": "Find a Camera by ID",
+                "description": "Return a single camera",
+                "operationId": "getCameraById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ID",
+                        "in": "path",
+                        "description": "ID of camera",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64",
+                    },
+                    {
+                        "name": "Active",
+                        "in": "query",
+                        "description": "Whether or not the camera is active",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "Name",
+                        "in": "query",
+                        "description": "Name of the camera",
+                        "required": false,
+                        "type": "string"
+                    },
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Camera"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find camera with the ID"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "cameras"
+                ],
+                "summary": "Update Camera by ID",
+                "description": "Update a single camera",
+                "operationId": "updateCameraById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ID",
+                        "in": "path",
+                        "description": "ID of camera",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64",
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "A camera to be registered",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                },
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Camera"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find camera with the ID or query params"
+                    },
+                    "400": {
+                        "description": "Query params found too many resources"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "cameras"
+                ],
+                "summary": "Delete an camera by ID",
+                "description": "Deleting just means setting Active to false",
+                "operationId": "deleteCameraById",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ID",
+                        "in": "path",
+                        "description": "ID of camera",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64",
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Camera"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find product type with the ID"
+                    },
                 }
             }
         }
@@ -96,7 +682,7 @@
                     "type": "integer",
                     "format": "int64"
                 },
-                "ProductID": {
+                "ProductTypeID": {
                     "type": "integer",
                     "format": "int64"
                 },
