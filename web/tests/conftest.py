@@ -62,7 +62,7 @@ def rcache(docker_container):
 def label():
     label = pvl.PVLModule({
         'RECORD_BYTES': 3,
-        '^IMAGE': 59,
+        '^IMAGE': 66,
         'PRODUCT_ID': 'testimg',
         'IMAGE': {
             'LINE_SAMPLES': 4,

@@ -8,7 +8,7 @@ from web import pdsimage
 
 
 def test_get_start_byte(label):
-    assert pdsimage.PDSImage._get_start_byte(label) == 174
+    assert pdsimage.PDSImage._get_start_byte(label) == 195
     label['^IMAGE'] = pvl.Units(5, 'BYTES')
     assert pdsimage.PDSImage._get_start_byte(label) == 5
 
@@ -21,7 +21,9 @@ def test_get_shape(label):
 def test_from_url(mock_requests, image):
     response = mock.MagicMock()
     mock_requests.get.return_value = response
-    response.content = pvl.dumps(image.label) + b' \r\n' + image.data.tobytes()
+    print(image.label['^IMAGE'])
+    print(len(pvl.dumps(image.label) + b'\r\n'))
+    response.content = pvl.dumps(image.label) + b'\r\n' + image.data.tobytes()
     url = 'path/image.img'
     im = pdsimage.PDSImage.from_url(url)
     response.raise_for_status.assert_called_once_with()
