@@ -1,0 +1,787 @@
+{
+   "openapi": "3.0.0",
+   "info": {
+      "description": "This is documentation for the API of the Opportunity appliation.",
+      "version": "0.1.0",
+      "title": "Opportunity",
+      "license": {
+         "name": "MIT",
+         "url": "https://opensource.org/licenses/MIT"
+      }
+   },
+   "tags": [
+      {
+         "name": "images",
+         "description": "registered pds images for the Opportunity rover"
+      },
+      {
+         "name": "product_types",
+         "description": "registered product types for the images"
+      },
+      {
+         "name": "cameras",
+         "description": "Names of cameras from which the images are taken"
+      }
+   ],
+   "paths": {
+      "/images": {
+         "get": {
+            "tags": [
+               "images"
+            ],
+            "summary": "Get all images",
+            "description": "Get all registered images",
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "*/*": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/Image"
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         },
+         "post": {
+            "tags": [
+               "images"
+            ],
+            "summary": "Register a new image",
+            "description": "",
+            "requestBody": {
+               "$ref": "#/components/requestBodies/Body"
+            },
+            "responses": {
+               "201": {
+                  "description": "Created new image",
+                  "content": {
+                     "*/*": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Image"
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/product_types": {
+         "get": {
+            "tags": [
+               "product_types"
+            ],
+            "summary": "Get all product types",
+            "description": "",
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "*/*": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/ProductType"
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         },
+         "post": {
+            "tags": [
+               "product_types"
+            ],
+            "summary": "Register a new product type",
+            "description": "",
+            "requestBody": {
+               "$ref": "#/components/requestBodies/Body3"
+            },
+            "responses": {
+               "201": {
+                  "description": "Created new product type",
+                  "content": {
+                     "*/*": {
+                        "schema": {
+                           "$ref": "#/components/schemas/ProductType"
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/cameras": {
+         "get": {
+            "tags": [
+               "cameras"
+            ],
+            "summary": "Get all cameras",
+            "description": "",
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "*/*": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/Camera"
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         },
+         "post": {
+            "tags": [
+               "cameras"
+            ],
+            "summary": "Register a new camera",
+            "description": "",
+            "requestBody": {
+               "$ref": "#/components/requestBodies/Body2"
+            },
+            "responses": {
+               "201": {
+                  "description": "Created new camera",
+                  "content": {
+                     "*/*": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Camera"
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/images/{ID}": {
+         "get": {
+            "tags": [
+               "images"
+            ],
+            "summary": "Find image by ID",
+            "description": "Return a single image",
+            "operationId": "getImageById",
+            "parameters": [
+               {
+                  "name": "ID",
+                  "in": "path",
+                  "description": "ID of image",
+                  "required": true,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               },
+               {
+                  "name": "Active",
+                  "in": "query",
+                  "description": "Name of the image",
+                  "required": false,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               },
+               {
+                  "name": "Name",
+                  "in": "query",
+                  "description": "Name of the image",
+                  "required": false,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "URL",
+                  "in": "query",
+                  "description": "URL of the image",
+                  "required": false,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "Sol",
+                  "in": "query",
+                  "description": "Sol of the image",
+                  "required": false,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               },
+               {
+                  "name": "DetatchedLabel",
+                  "in": "query",
+                  "description": "Whether or not the image has a detatched label",
+                  "required": false,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               },
+               {
+                  "name": "CameraID",
+                  "in": "query",
+                  "description": "Camera ID of the image",
+                  "required": false,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               },
+               {
+                  "name": "ProductTypeID",
+                  "in": "query",
+                  "description": "Product Type ID of the image",
+                  "required": false,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Image"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Could not find image with the ID"
+               }
+            }
+         },
+         "put": {
+            "tags": [
+               "images"
+            ],
+            "summary": "Update image by ID",
+            "description": "Update a single image",
+            "operationId": "updateImageById",
+            "parameters": [
+               {
+                  "name": "ID",
+                  "in": "path",
+                  "description": "ID of image",
+                  "required": true,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               }
+            ],
+            "requestBody": {
+               "$ref": "#/components/requestBodies/Body"
+            },
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Image"
+                        }
+                     }
+                  }
+               },
+               "400": {
+                  "description": "Query params found too many resources"
+               },
+               "404": {
+                  "description": "Could not find image with the ID or query params"
+               }
+            }
+         },
+         "delete": {
+            "tags": [
+               "images"
+            ],
+            "summary": "Delete an image by ID",
+            "description": "Deleting just means setting Active to false",
+            "operationId": "deleteImageById",
+            "parameters": [
+               {
+                  "name": "ID",
+                  "in": "path",
+                  "description": "ID of image",
+                  "required": true,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Image"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Could not find image with the ID"
+               }
+            }
+         }
+      },
+      "/product_types/{ID}": {
+         "get": {
+            "tags": [
+               "product_types"
+            ],
+            "summary": "Find a Product Type by ID",
+            "description": "Return a product type",
+            "operationId": "getProductTypeById",
+            "parameters": [
+               {
+                  "name": "ID",
+                  "in": "path",
+                  "description": "ID of product type",
+                  "required": true,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               },
+               {
+                  "name": "Active",
+                  "in": "query",
+                  "description": "Whether or not the product type is active",
+                  "required": false,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               },
+               {
+                  "name": "Name",
+                  "in": "query",
+                  "description": "Name of the product type",
+                  "required": false,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/ProductType"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Could not find product type with the ID"
+               }
+            }
+         },
+         "put": {
+            "tags": [
+               "product_types"
+            ],
+            "summary": "Update Product Type by ID",
+            "description": "Update a single product type",
+            "operationId": "updateProductTypeById",
+            "parameters": [
+               {
+                  "name": "ID",
+                  "in": "path",
+                  "description": "ID of product type",
+                  "required": true,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               }
+            ],
+            "requestBody": {
+               "$ref": "#/components/requestBodies/Body3"
+            },
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/ProductType"
+                        }
+                     }
+                  }
+               },
+               "400": {
+                  "description": "Query params found too many resources"
+               },
+               "404": {
+                  "description": "Could not find product type with the ID or query params"
+               }
+            }
+         },
+         "delete": {
+            "tags": [
+               "product_types"
+            ],
+            "summary": "Delete an product type by ID",
+            "description": "Deleting just means setting Active to false",
+            "operationId": "deleteProductTypeById",
+            "parameters": [
+               {
+                  "name": "ID",
+                  "in": "path",
+                  "description": "ID of product type",
+                  "required": true,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/ProductType"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Could not find product type with the ID"
+               }
+            }
+         }
+      },
+      "/cameras/{ID}": {
+         "get": {
+            "tags": [
+               "cameras"
+            ],
+            "summary": "Find a Camera by ID",
+            "description": "Return a single camera",
+            "operationId": "getCameraById",
+            "parameters": [
+               {
+                  "name": "ID",
+                  "in": "path",
+                  "description": "ID of camera",
+                  "required": true,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               },
+               {
+                  "name": "Active",
+                  "in": "query",
+                  "description": "Whether or not the camera is active",
+                  "required": false,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               },
+               {
+                  "name": "Name",
+                  "in": "query",
+                  "description": "Name of the camera",
+                  "required": false,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Camera"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Could not find camera with the ID"
+               }
+            }
+         },
+         "put": {
+            "tags": [
+               "cameras"
+            ],
+            "summary": "Update Camera by ID",
+            "description": "Update a single camera",
+            "operationId": "updateCameraById",
+            "parameters": [
+               {
+                  "name": "ID",
+                  "in": "path",
+                  "description": "ID of camera",
+                  "required": true,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               }
+            ],
+            "requestBody": {
+               "$ref": "#/components/requestBodies/Body2"
+            },
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Camera"
+                        }
+                     }
+                  }
+               },
+               "400": {
+                  "description": "Query params found too many resources"
+               },
+               "404": {
+                  "description": "Could not find camera with the ID or query params"
+               }
+            }
+         },
+         "delete": {
+            "tags": [
+               "cameras"
+            ],
+            "summary": "Delete an camera by ID",
+            "description": "Deleting just means setting Active to false",
+            "operationId": "deleteCameraById",
+            "parameters": [
+               {
+                  "name": "ID",
+                  "in": "path",
+                  "description": "ID of camera",
+                  "required": true,
+                  "schema": {
+                     "type": "integer",
+                     "format": "int64"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Successful operation",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/Camera"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Could not find product type with the ID"
+               }
+            }
+         }
+      }
+   },
+   "servers": [
+      {
+         "url": "http://192.168.99.100:5001/api"
+      },
+      {
+         "url": "http://127.0.0.1:5001/api"
+      }
+   ],
+   "components": {
+      "requestBodies": {
+         "Body": {
+            "content": {
+               "application/json": {
+                  "schema": {
+                     "type": "object",
+                     "properties": {
+                        "Name": {
+                           "type": "string"
+                        },
+                        "URL": {
+                           "type": "string"
+                        },
+                        "Sol": {
+                           "type": "integer",
+                           "format": "int32"
+                        },
+                        "DetatchedLabel": {
+                           "type": "boolean",
+                           "default": false
+                        },
+                        "CameraID": {
+                           "type": "integer",
+                           "format": "int64"
+                        },
+                        "ProductTypeID": {
+                           "type": "integer",
+                           "format": "int64"
+                        }
+                     }
+                  }
+               }
+            },
+            "description": "An image objected to be registered",
+            "required": true
+         },
+         "Body2": {
+            "content": {
+               "application/json": {
+                  "schema": {
+                     "type": "object",
+                     "properties": {
+                        "Name": {
+                           "type": "string"
+                        }
+                     }
+                  }
+               }
+            },
+            "description": "A camera to be registered",
+            "required": true
+         },
+         "Body3": {
+            "content": {
+               "application/json": {
+                  "schema": {
+                     "type": "object",
+                     "properties": {
+                        "Name": {
+                           "type": "string"
+                        }
+                     }
+                  }
+               }
+            },
+            "description": "A product type to be registered",
+            "required": true
+         }
+      },
+      "schemas": {
+         "Image": {
+            "type": "object",
+            "properties": {
+               "ID": {
+                  "type": "integer",
+                  "format": "int64"
+               },
+               "Active": {
+                  "type": "boolean"
+               },
+               "Created": {
+                  "type": "string",
+                  "format": "date-time"
+               },
+               "Updated": {
+                  "type": "string",
+                  "format": "date-time"
+               },
+               "Name": {
+                  "type": "string"
+               },
+               "Url": {
+                  "type": "string"
+               },
+               "Sol": {
+                  "type": "integer",
+                  "format": "int32"
+               },
+               "DetatchedLabel": {
+                  "type": "boolean"
+               },
+               "CameraID": {
+                  "type": "integer",
+                  "format": "int64"
+               },
+               "ProductTypeID": {
+                  "type": "integer",
+                  "format": "int64"
+               },
+               "cameras": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/Camera"
+                  }
+               },
+               "product_types": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/ProductType"
+                  }
+               }
+            }
+         },
+         "ProductType": {
+            "type": "object",
+            "properties": {
+               "ID": {
+                  "type": "integer",
+                  "format": "int64"
+               },
+               "Active": {
+                  "type": "boolean"
+               },
+               "Created": {
+                  "type": "string",
+                  "format": "date-time"
+               },
+               "Updated": {
+                  "type": "string",
+                  "format": "date-time"
+               },
+               "Name": {
+                  "type": "string"
+               }
+            }
+         },
+         "Camera": {
+            "type": "object",
+            "properties": {
+               "ID": {
+                  "type": "integer",
+                  "format": "int64"
+               },
+               "Active": {
+                  "type": "boolean"
+               },
+               "Created": {
+                  "type": "string",
+                  "format": "date-time"
+               },
+               "Updated": {
+                  "type": "string",
+                  "format": "date-time"
+               },
+               "Name": {
+                  "type": "string"
+               }
+            }
+         }
+      }
+   }
+}

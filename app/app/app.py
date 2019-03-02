@@ -4,6 +4,7 @@ from datetime import datetime
 
 from flask import Flask
 import sqlalchemy as sa  # type: ignore
+from flask_cors import CORS  # type: ignore
 from flask_sqlalchemy import SQLAlchemy, Model  # type: ignore
 
 from app import config
@@ -11,6 +12,7 @@ from app import config
 app = Flask(__name__)
 app.config.from_object(config.DevelopmentConfig)  # type: ignore
 app.url_map.strict_slashes = False
+CORS(app)
 
 
 class Base(Model):
@@ -34,8 +36,8 @@ class Base(Model):
     def to_dict(self) -> Dict[str, Any]:
         return {
             'ID': self.ID,
-            'Created': str(self.Created),
-            'Updated': str(self.Updated),
+            'Created': self.Created.isoformat(),
+            'Updated': self.Updated.isoformat(),
             'Active': self.Active,
         }
 

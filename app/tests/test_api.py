@@ -93,21 +93,21 @@ def test_update_resource(session, application):
     with application.test_request_context(json={'Name': 'bar'}):
         cam = api.update_resource(Camera, 1)
     assert cam['Name'] == 'bar'
-    assert cam['Created'] == str(og_cam.Created)
-    assert cam['Updated'] != str(og_cam.Updated)
+    assert cam['Created'] == og_cam.Created.isoformat()
+    assert cam['Updated'] != og_cam.Updated.isoformat()
     up1_cam = Camera.query.first()
     assert up1_cam.Name == 'bar'
-    assert str(up1_cam.Updated) == cam['Updated']
+    assert up1_cam.Updated.isoformat() == cam['Updated']
 
     with application.test_request_context(url, json={'Name': 'foo'}):
         cam = api.update_resource(Camera)
     assert cam['Name'] == 'foo'
-    assert cam['Created'] == str(og_cam.Created)
-    assert cam['Updated'] != str(og_cam.Updated)
-    assert cam['Updated'] != str(up1_cam.Updated)
+    assert cam['Created'] == og_cam.Created.isoformat()
+    assert cam['Updated'] != og_cam.Updated.isoformat()
+    assert cam['Updated'] != up1_cam.Updated.isoformat()
     up2_cam = Camera.query.first()
     assert up2_cam.Name == 'foo'
-    assert str(up2_cam.Updated) == cam['Updated']
+    assert up2_cam.Updated.isoformat() == cam['Updated']
 
 
 def test_delete_resource(session):
@@ -165,9 +165,6 @@ def test_get_create_update_or_delete(session, application):
     r = client.put('/api/cameras/2', json={'Name': 'baz'})
     assert r.status_code == 200
     assert r.json['Name'] == 'baz'
-    r = client.put('/api/cameras?Name=baz', json={'Name': 'foobar'})
-    assert r.status_code == 200
-    assert r.json['Name'] == 'foobar'
 
     # Test Get
     r = client.get('/api/cameras/1')

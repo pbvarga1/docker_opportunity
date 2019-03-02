@@ -19,6 +19,7 @@ setup(
         'SQLAlchemy==1.2.18',
         'Flask-SQLAlchemy==2.3.2',
         'psycopg2-binary==2.7.7',
+        'flask-cors==3.0.7'
     ],
     license="BSD",
     zip_safe=False,

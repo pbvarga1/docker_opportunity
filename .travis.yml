@@ -23,12 +23,13 @@ jobs:
     - stage: "tests"
       script:
         - flake8 app/
-        - mypy app/app/ 
+        - mypy app/app/
+        - openapi-spec-validator app/swagger.json
         - pytest app/tests -v --cov=app/app
     -
       script:
         - flake8 web/
-        - mypy web/web/ 
+        - mypy web/web/
         - pytest web/tests -v --cov=web/web
 
 after_success:

@@ -33,4 +33,24 @@ services:
         depends_on:
             - opp-database
             - opp-app
-
+    opp-swagger:
+        image: swaggerapi/swagger-ui
+        restart: always
+        volumes:
+            - /c/Users/perry/WSL/Workspace/for_fun/opportunity/app:/usr/src/app/app
+        environment:
+            - SWAGGER_JSON=/usr/src/app/app/swagger.json
+        ports:
+            - 5004:8080
+        depends_on:
+            - opp-app
+    opp-docs:
+        build: ./
+        restart: always
+        environment:
+            - NGINX_PORT=80
+        ports:
+            - 5005:80
+        depends_on:
+            - opp-app
+            - opp-web

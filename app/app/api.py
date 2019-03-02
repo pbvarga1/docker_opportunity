@@ -97,7 +97,7 @@ def delete_resource(Resource: Base, ID: int) -> dict:
 )
 @app.route(
     '/api/<string:resource>',
-    methods=['GET', 'POST', 'PUT', 'DELETE'],
+    methods=['GET', 'POST'],
 )
 def get_create_update_or_delete(resource: str,
                                 ID: Optional[int] = None) -> CodeResponse:

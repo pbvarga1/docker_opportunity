@@ -11,6 +11,36 @@ from matplotlib.backends.backend_agg import (  # type: ignore
 
 
 class PDSImage:
+    """A PDS Image that can download and display images
+
+    Parameters
+    ----------
+    data : :class:`numpy.ndarray`
+        The image data
+    label : :class:`pvl.PVLModule`
+        The label of the image
+
+    Examples
+    --------
+    >>> from web.pdsimage import PDSImage
+    >>> url = (
+    ...     'http://pds-geosciences.wustl.edu/mer/mer1-m-pancam-2-edr-sci-v1/'
+    ...     'mer1pc_0xxx/data/sol0010/1p129069032esf0224p2812l2c1.img'
+    ...)
+    >>> image = PDSImage.from_url(url)
+    >>> image.data.shape
+    (1, 272, 361)
+    >>> image.image.shape
+    (272, 361)
+    >>> image.image[:3, :3]
+    array([[1566, 1586, 1586],
+       [1586, 1606, 1606],
+       [1586, 1606, 1647]], dtype=int16)
+    >>> image.label['MISSION_NAME']
+    MARS EXPLORATION ROVER
+    >>> image.label['PRODUCT_ID']
+    1P129069032ESF0224P2812L2C1
+    """
 
     SAMPLE_TYPES = {
         'MSB_INTEGER': '>i',
@@ -65,6 +95,19 @@ class PDSImage:
 
     @staticmethod
     def _get_start_byte(label: pvl.PVLModule) -> int:
+        """Get the starting byte of the image from the label
+
+        Parameters
+        ----------
+        label : :class:`pvl.PVLModule`
+            The label of the image being read
+
+        Returns
+        -------
+        start_byte : :obj:`int`
+            The starting byte of the image in the file/contents
+        """
+
         record_bytes = label['RECORD_BYTES']
         im_pointer = label['^IMAGE']
         if isinstance(im_pointer, int):
@@ -76,6 +119,19 @@ class PDSImage:
 
     @staticmethod
     def _get_shape(label: pvl.PVLModule) -> Tuple[int, int, int]:
+        """Get the shape of the image from the label
+
+        Parameters
+        ----------
+        label : :class:`pvl.PVLModule`
+            The label of the image being read
+
+        Returns
+        -------
+        shape : :obj:`tuple` (:obj:`int`, :obj:`int`, :obj:`int`)
+            The shape of the image in the file/contents
+        """
+
         samples = label['IMAGE']['LINE_SAMPLES']
         lines = label['IMAGE']['LINES']
         bands = label['IMAGE']['BANDS']
@@ -83,6 +139,23 @@ class PDSImage:
 
     @classmethod
     def from_url(cls, url: str, detatched: bool = False) -> 'PDSImage':
+        """Get an image from the PDS Imaging node
+
+        Note this does not save a local copy of the image
+
+        Parameters
+        ----------
+        url : :obj:`str`
+            The url to the image in the pds imaging node
+        detatched : :obj:`bool`
+            Whether or not the label is detatched. ``False`` by default
+
+        Returns
+        -------
+        image : :class:`PDSImage`
+            The image from the url
+        """
+
         resp = requests.get(url)
         resp.raise_for_status()
         content = resp.content
@@ -110,16 +183,31 @@ class PDSImage:
         self._label = label
         self._data = data
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.product_id})'
+
+    @property
+    def product_id(self):
+        return self._label['PRODUCT_ID']
+
     @property
     def data(self) -> np.ndarray:
+        """:class:`numpy.ndarray` : Copy of the image's data.
+
+        See Also
+        --------
+        :attr:`~PDSImage.image` : image array for viewing
+        """
         return self._data.copy()
 
     @property
     def label(self) -> pvl.PVLModule:
+        """:class:`pvl.PVLModule` : Copy of the image's label"""
         return self._label.copy()
 
     @property
     def bands(self) -> int:
+        """:obj:`int` : The number of bands in the image"""
         if len(self._data.shape) == 3:
             return self._data.shape[0]
         else:
@@ -127,12 +215,21 @@ class PDSImage:
 
     @property
     def image(self) -> np.ndarray:
+        """:class:`numpy.ndarray` : data in a format for viewing"""
         if self.bands == 1:
             return self.data.squeeze()
         elif self.bands == 3:
             return np.dstack(self.data)
 
     def get_png_output(self) -> BytesIO:
+        """Get the image as a bytes canvas for displaying on a webpage
+
+        Returns
+        -------
+        :class:`io.BytesIO`
+            Image as a bytes object for viewing on a webpage
+        """
+
         fig = Figure()
         ax = fig.add_subplot(111)
         fig.patch.set_visible(False)
