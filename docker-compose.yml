@@ -45,3 +45,13 @@ services:
             - 5004:8080
         depends_on:
             - opp-app
+    opp-docs:
+        build: ./
+        restart: always
+        environment:
+            - NGINX_PORT=80
+        ports:
+            - 5005:80
+        depends_on:
+            - opp-app
+            - opp-web
