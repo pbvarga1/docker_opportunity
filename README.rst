@@ -104,8 +104,7 @@ toolbox, set the following environment envariable:
 
     $ export DOCKER_IP='127.0.0.1'
 
-
- From the top directory ``oportunity``, run:
+From the top directory ``oportunity``, run:
 
 .. code-block:: bash
 
