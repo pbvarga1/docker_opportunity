@@ -100,15 +100,17 @@ to your own github account and then clone your forked repo to your computer.
 Make sure docker is installed and running. If you are **not** using docker
 toolbox, set the following environment envariable:
 
-```shell
-$ export DOCKER_IP='127.0.0.1'
-```
+.. code-block:: bash
+
+    $ export DOCKER_IP='127.0.0.1'
+
 
  From the top directory ``oportunity``, run:
 
-```shell
-$ docker-compose up
-```
+.. code-block:: bash
+
+    $ docker-compose up
+
 
 Which will build the images and run the docker containers. If you are using
 dockertoolbox, then the host will be ``192.168.99.100``, otherwise it will be
