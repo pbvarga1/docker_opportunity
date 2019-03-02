@@ -29,6 +29,7 @@ Software/techniques/packages used so far.
     * Testing with Docker: Creating a temporary database in docker and using
       the database to test as if on a live server; Creating a redis server and
       testing against that.
+    * `Multistage build <https://docs.docker.com/develop/develop-images/multistage-build/>`_
 
 * `PostgreSQL <https://www.postgresql.org/docs/>`_
 * `Flask <http://flask.pocoo.org/>`_
@@ -73,6 +74,25 @@ Software/techniques/packages used so far.
     * `Stub Files <https://www.python.org/dev/peps/pep-0484/#stub-files>`_
 
         * See also `Mypy Stubs <https://mypy.readthedocs.io/en/latest/stubs.html>`_
+
+* `Swagger <https://swagger.io/>`_
+
+    * `OpenAPI 3.0 <https://swagger.io/docs/specification/about/>`_
+    * `OpenAPI 2.0 <https://swagger.io/docs/specification/2-0/basic-structure/>`_
+
+        * `See this commit <https://github.com/pbvarga1/opportunity/blob/
+          d4f523093d41a288096a04656560397e9d6ac690/app/swagger.json>`_
+
+* `Sphinx Documentation <http://www.sphinx-doc.org/en/master/>`_
+
+    * `Restructured Text (rst) format <http://www.sphinx-doc.org/en/master/
+       usage/restructuredtext/basics.html>`_
+    * `Autodoc extension <http://www.sphinx-doc.org/en/master/usage/
+       extensions/autodoc.html>`_
+    * `NumpyDoc extension <https://numpydoc.readthedocs.io/en/latest/
+       install.html#sphinx-config-options>`_
+
+* `Numpy Docstrings <https://numpydoc.readthedocs.io/en/latest/format.html>`_
 
 
 Quick Start
