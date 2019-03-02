@@ -24,13 +24,12 @@ jobs:
       script:
         - flake8 app/
         - mypy app/app/
-        - swagger-flex -s app/swagger.json
+        - openapi-spec-validator app/swagger.json
         - pytest app/tests -v --cov=app/app
     -
       script:
         - flake8 web/
         - mypy web/web/
-        - swagger-flex -s app/swagger.json
         - pytest web/tests -v --cov=web/web
 
 after_success:
