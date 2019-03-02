@@ -85,12 +85,9 @@ Software/techniques/packages used so far.
 
 * `Sphinx Documentation <http://www.sphinx-doc.org/en/master/>`_
 
-    * `Restructured Text (rst) format <http://www.sphinx-doc.org/en/master/
-       usage/restructuredtext/basics.html>`_
-    * `Autodoc extension <http://www.sphinx-doc.org/en/master/usage/
-       extensions/autodoc.html>`_
-    * `NumpyDoc extension <https://numpydoc.readthedocs.io/en/latest/
-       install.html#sphinx-config-options>`_
+    * `Restructured Text (rst) format <http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
+    * `Autodoc extension <http://www.sphinx-doc.org/en/master/usage/xtensions/autodoc.html>`_
+    * `NumpyDoc extension <https://numpydoc.readthedocs.io/en/latest/install.html#sphinx-config-options>`_
 
 * `Numpy Docstrings <https://numpydoc.readthedocs.io/en/latest/format.html>`_
 
