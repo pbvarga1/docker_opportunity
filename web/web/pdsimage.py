@@ -94,7 +94,7 @@ class PDSImage:
     }
 
     @staticmethod
-    def _get_start_byte(label: pvl.PVLModule) -> int:
+    async def _get_start_byte(label: pvl.PVLModule) -> int:
         """Get the starting byte of the image from the label
 
         Parameters
@@ -118,7 +118,7 @@ class PDSImage:
             raise ValueError('label["^IMAGE"] should be int or pvl.Units')
 
     @staticmethod
-    def _get_shape(label: pvl.PVLModule) -> Tuple[int, int, int]:
+    async def _get_shape(label: pvl.PVLModule) -> Tuple[int, int, int]:
         """Get the shape of the image from the label
 
         Parameters
@@ -138,7 +138,7 @@ class PDSImage:
         return (bands, lines, samples)
 
     @classmethod
-    def from_url(cls, url: str, detatched: bool = False) -> 'PDSImage':
+    def from_url(cls, url: str, detatched: bool = False, session) -> 'PDSImage':
         """Get an image from the PDS Imaging node
 
         Note this does not save a local copy of the image
@@ -156,27 +156,25 @@ class PDSImage:
             The image from the url
         """
 
-        resp = requests.get(url)
-        resp.raise_for_status()
-        content = resp.content
+        async with session.get(url) as resp:
+            content = await resp.read()
         if detatched:
-            resp = requests.get(url.replace('.img', '.lbl'))
-            resp.raise_for_status()
-            lbl_content = resp.content
+            async with session.get(url.replace('.img', '.lbl')) as resp:
+                await lbl_content = resp.read()
         else:
             lbl_content = content
         label = pvl.loads(lbl_content, strict=False)
-        start_byte = cls._get_start_byte(label)
-        shape = cls._get_shape(label)
+        start_byte_fut = cls._get_start_byte(label)
+        shape_fut = cls._get_shape(label)
         sample_type = cls.SAMPLE_TYPES[label['IMAGE']['SAMPLE_TYPE']]
         sample_byte = int(label['IMAGE']['SAMPLE_BITS'] // 8)
         dtype = np.dtype(f'{sample_type}{sample_byte}')
         data = np.frombuffer(
             buffer=content,
             dtype=dtype,
-            offset=start_byte,
+            offset=await start_byte_fut,
         )
-        data = data.reshape(shape).copy()
+        data = data.reshape(await shape_fut).copy()
         return cls(data, label)
 
     def __init__(self, data: np.ndarray, label: pvl.PVLModule):
