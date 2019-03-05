@@ -23,17 +23,30 @@ services = Blueprint('services', __name__)
 API_URL = 'http://opp-app:80/api'
 
 
+@app.before_serving
+async def before_serving():
+    print('foo')
+    session = aiohttp.ClientSession()
+    app.session = session
+
+
+@app.after_serving
+async def after_serving():
+    await app.session.close()
+
+
 @app.route('/')
 @app.route('/cameras')
 @app.route('/product_types')
 async def index() -> Response:
-    return render_template('index.html')
+    return await render_template('index.html')
 
 
 async def _create_resource(resource_name: str, is_upper: bool) -> dict:
     url = f'{API_URL}/{resource_name}'
     try:
-        name = request.json['name']
+        request_json = await request.get_json()
+        name = request_json['name']
         if is_upper:
             name = name.upper()
         data = {'Name': name}
@@ -46,7 +59,7 @@ async def _create_resource(resource_name: str, is_upper: bool) -> dict:
 
 async def _get_resources(resource_name: str) -> list:
     url = f'{API_URL}/{resource_name}'
-    params = {'Active': True}
+    params = {'Active': 'true'}
     try:
         async with app.session.get(url, params=params) as resp:
             resources = await resp.json()
@@ -81,7 +94,7 @@ async def get_cameras() -> Response:
 
 @services.route('/images', methods=['POST'])
 async def register_image() -> Response:
-    data = request.json
+    data = await request.get_json()
     sol = int(data['sol'])
     url = str(data['url'])
     name = posixpath.basename(url)
@@ -103,7 +116,7 @@ async def register_image() -> Response:
 
 @services.route('/images', methods=['GET'])
 async def get_images() -> Response:
-    params = {'Active': True}
+    params = {'Active': 'true'}
     async with app.session.get(f'{API_URL}/images', params=params) as resp:
         data = await resp.json()
     return jsonify(data=data)
@@ -111,18 +124,19 @@ async def get_images() -> Response:
 
 @services.route('/display_image', methods=['GET'])
 async def display_image() -> Response:
-    rcache = get_rcache()
+    rcache = await get_rcache()
     image_cache = ImageCache(rcache)
     url = request.args['url']
     name = posixpath.basename(url)
-    if name in image_cache:
-        image = await image_cache[name]
+    print(await image_cache.exists(name))
+    if await image_cache.exists(name):
+        image = await image_cache.get(name)
         cache_future = image_cache.set_time(name)
     else:
-        image = await PDSImage.from_url(url, app.session)
-        cache_future = image_cache[name] = image
-    png_output = image.get_png_output()
-    response = make_response(png_output.getvalue())
+        image = await PDSImage.from_url(url, session=app.session)
+        cache_future = image_cache.set(name, image)
+    png_output = await image.get_png_output()
+    response = await make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
     await cache_future
     return response

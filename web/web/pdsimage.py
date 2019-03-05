@@ -1,3 +1,4 @@
+import asyncio
 from io import BytesIO
 from typing import Tuple
 
@@ -138,7 +139,7 @@ class PDSImage:
         return (bands, lines, samples)
 
     @classmethod
-    def from_url(cls, url: str, detatched: bool = False, session) -> 'PDSImage':
+    async def from_url(cls, url: str, detatched: bool = False, session=None) -> 'PDSImage':
         """Get an image from the PDS Imaging node
 
         Note this does not save a local copy of the image
@@ -160,7 +161,7 @@ class PDSImage:
             content = await resp.read()
         if detatched:
             async with session.get(url.replace('.img', '.lbl')) as resp:
-                await lbl_content = resp.read()
+                lbl_content = await resp.read()
         else:
             lbl_content = content
         label = pvl.loads(lbl_content, strict=False)
@@ -185,11 +186,11 @@ class PDSImage:
         return f'{self.__class__.__name__}({self.product_id})'
 
     @property
-    def product_id(self):
+    async def product_id(self):
         return self._label['PRODUCT_ID']
 
     @property
-    def data(self) -> np.ndarray:
+    async def data(self) -> np.ndarray:
         """:class:`numpy.ndarray` : Copy of the image's data.
 
         See Also
@@ -199,12 +200,12 @@ class PDSImage:
         return self._data.copy()
 
     @property
-    def label(self) -> pvl.PVLModule:
+    async def label(self) -> pvl.PVLModule:
         """:class:`pvl.PVLModule` : Copy of the image's label"""
         return self._label.copy()
 
     @property
-    def bands(self) -> int:
+    async def bands(self) -> int:
         """:obj:`int` : The number of bands in the image"""
         if len(self._data.shape) == 3:
             return self._data.shape[0]
@@ -212,14 +213,24 @@ class PDSImage:
             return 1
 
     @property
-    def image(self) -> np.ndarray:
-        """:class:`numpy.ndarray` : data in a format for viewing"""
-        if self.bands == 1:
-            return self.data.squeeze()
-        elif self.bands == 3:
-            return np.dstack(self.data)
+    async def dtype(self):
+        return self._data.dtype
 
-    def get_png_output(self) -> BytesIO:
+    @property
+    async def shape(self):
+        return self._data.shape
+
+    @property
+    async def image(self) -> np.ndarray:
+        """:class:`numpy.ndarray` : data in a format for viewing"""
+        data, bands = await asyncio.gather(self.data, self.bands)
+
+        if bands == 1:
+            return data.squeeze()
+        elif bands == 3:
+            return np.dstack(data)
+
+    async def get_png_output(self) -> BytesIO:
         """Get the image as a bytes canvas for displaying on a webpage
 
         Returns
@@ -231,8 +242,8 @@ class PDSImage:
         fig = Figure()
         ax = fig.add_subplot(111)
         fig.patch.set_visible(False)
-        cmap = 'gray' if self.bands == 1 else None
-        ax.imshow(self.image, cmap=cmap)
+        cmap = 'gray' if await self.bands == 1 else None
+        ax.imshow(await self.image, cmap=cmap)
         ax.axis('off')
         canvas = FigureCanvas(fig)
         png_output = BytesIO()
