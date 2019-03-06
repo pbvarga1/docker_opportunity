@@ -2,7 +2,6 @@ import posixpath
 
 import aiohttp
 from quart import (
-    abort,
     Quart,
     jsonify,
     request,
@@ -17,6 +16,7 @@ from web.redis_cache import ImageCache, get_rcache
 
 app = Quart(__name__)
 app.url_map.strict_slashes = False
+app.session = None
 
 services = Blueprint('services', __name__)
 
@@ -25,8 +25,7 @@ API_URL = 'http://opp-app:80/api'
 
 @app.before_serving
 async def before_serving():
-    print('foo')
-    session = aiohttp.ClientSession()
+    session = aiohttp.ClientSession(raise_for_status=True)
     app.session = session
 
 
@@ -50,11 +49,11 @@ async def _create_resource(resource_name: str, is_upper: bool) -> dict:
         if is_upper:
             name = name.upper()
         data = {'Name': name}
-    except KeyError:
-        abort(400, 'json format should be {"name": "<value>"')
+    except KeyError as e:
+        return {'error': 'json format should be {"name": "<value>"}'}, 400
     async with app.session.post(url, json=data) as resp:
         data = await resp.json()
-    return data
+    return data, resp.status
 
 
 async def _get_resources(resource_name: str) -> list:
@@ -63,33 +62,34 @@ async def _get_resources(resource_name: str) -> list:
     try:
         async with app.session.get(url, params=params) as resp:
             resources = await resp.json()
-    except aiohttp.ClientResponseError:
-        return []
-    return resources
+            status_code = resp.status
+    except aiohttp.ClientResponseError as err:
+        return [], err.status
+    return resources, status_code
 
 
 @services.route('/product_types', methods=['POST'])
 async def create_product_type() -> Response:
-    product_type = await _create_resource('product_types', True)
-    return jsonify(data=product_type)
+    product_type, status_code = await _create_resource('product_types', True)
+    return jsonify(data=product_type), status_code
 
 
 @services.route('/product_types', methods=['GET'])
 async def get_product_types() -> Response:
-    product_types = await _get_resources('product_types')
-    return jsonify(data=product_types)
+    product_types, status_code = await _get_resources('product_types')
+    return jsonify(data=product_types), status_code
 
 
 @services.route('/cameras', methods=['POST'])
 async def create_camera() -> Response:
-    camera = await _create_resource('cameras', False)
-    return jsonify(data=camera)
+    camera, status_code = await _create_resource('cameras', False)
+    return jsonify(data=camera), status_code
 
 
 @services.route('/cameras', methods=['GET'])
 async def get_cameras() -> Response:
-    cameras = await _get_resources('cameras')
-    return jsonify(data=cameras)
+    cameras, status_code = await _get_resources('cameras')
+    return jsonify(data=cameras), status_code
 
 
 @services.route('/images', methods=['POST'])
@@ -128,7 +128,6 @@ async def display_image() -> Response:
     image_cache = ImageCache(rcache)
     url = request.args['url']
     name = posixpath.basename(url)
-    print(await image_cache.exists(name))
     if await image_cache.exists(name):
         image = await image_cache.get(name)
         cache_future = image_cache.set_time(name)
