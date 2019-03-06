@@ -16,7 +16,7 @@ async def image_cache(rcache):
 MOCK_NOW = datetime(1995, 10, 24, 7, 13, 42)
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(autouse=True)
 async def now():
     with patch('web.redis_cache.datetime') as mock_dt:
         mock_dt.now.return_value = MOCK_NOW
@@ -158,6 +158,5 @@ class TestImageCache:
         assert await image_cache.exists('foo:label')
         assert await image_cache.exists('foo:shape')
         # Set item without internal entries
-        await redis_cache.HashCache.set(image_cache, 'bar', 'baz')
-        assert await redis_cache.HashCache.exists(image_cache, 'bar')
+        await image_cache.set_time('bar')
         assert not await image_cache.exists('bar')
