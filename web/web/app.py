@@ -1,5 +1,5 @@
 import posixpath
-from typing import Tuple, List, Any
+from typing import Tuple, List, Any, Optional, Awaitable
 
 import aiohttp
 from quart import (
@@ -20,7 +20,7 @@ class SessionQuart(Quart):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.session = None
+        self.session: aiohttp.ClientSession = None
 
 
 app = SessionQuart(__name__)
@@ -138,6 +138,7 @@ async def display_image() -> Response:
     image_cache = ImageCache(rcache)
     url = request.args['url']
     name = posixpath.basename(url)
+    cache_future: Awaitable[Any]
     if await image_cache.exists(name):
         image = await image_cache.get(name)
         cache_future = image_cache.set_time(name)
