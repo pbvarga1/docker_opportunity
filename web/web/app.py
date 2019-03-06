@@ -1,4 +1,5 @@
 import posixpath
+from typing import Tuple, List, Any
 
 import aiohttp
 from quart import (
@@ -14,9 +15,15 @@ from quart import (
 from web.pdsimage import PDSImage
 from web.redis_cache import ImageCache, get_rcache
 
-app = Quart(__name__)
-app.url_map.strict_slashes = False
-app.session = None
+
+class SessionQuart(Quart):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.session = None
+
+
+app = SessionQuart(__name__)
 
 services = Blueprint('services', __name__)
 
@@ -37,11 +44,12 @@ async def after_serving():
 @app.route('/')
 @app.route('/cameras')
 @app.route('/product_types')
-async def index() -> Response:
+async def index() -> str:
     return await render_template('index.html')
 
 
-async def _create_resource(resource_name: str, is_upper: bool) -> dict:
+async def _create_resource(resource_name: str,
+                           is_upper: bool) -> Tuple[dict, int]:
     url = f'{API_URL}/{resource_name}'
     try:
         request_json = await request.get_json()
@@ -56,7 +64,7 @@ async def _create_resource(resource_name: str, is_upper: bool) -> dict:
     return data, resp.status
 
 
-async def _get_resources(resource_name: str) -> list:
+async def _get_resources(resource_name: str) -> Tuple[List[Any], int]:
     url = f'{API_URL}/{resource_name}'
     params = {'Active': 'true'}
     try:
@@ -69,31 +77,31 @@ async def _get_resources(resource_name: str) -> list:
 
 
 @services.route('/product_types', methods=['POST'])
-async def create_product_type() -> Response:
+async def create_product_type() -> Tuple[Response, int]:
     product_type, status_code = await _create_resource('product_types', True)
     return jsonify(data=product_type), status_code
 
 
 @services.route('/product_types', methods=['GET'])
-async def get_product_types() -> Response:
+async def get_product_types() -> Tuple[Response, int]:
     product_types, status_code = await _get_resources('product_types')
     return jsonify(data=product_types), status_code
 
 
 @services.route('/cameras', methods=['POST'])
-async def create_camera() -> Response:
+async def create_camera() -> Tuple[Response, int]:
     camera, status_code = await _create_resource('cameras', False)
     return jsonify(data=camera), status_code
 
 
 @services.route('/cameras', methods=['GET'])
-async def get_cameras() -> Response:
+async def get_cameras() -> Tuple[Response, int]:
     cameras, status_code = await _get_resources('cameras')
     return jsonify(data=cameras), status_code
 
 
 @services.route('/images', methods=['POST'])
-async def register_image() -> Response:
+async def register_image() -> Tuple[Response, int]:
     data = await request.get_json()
     sol = int(data['sol'])
     url = str(data['url'])
@@ -111,15 +119,17 @@ async def register_image() -> Response:
     }
     async with app.session.post(f'{API_URL}/images', json=new_image) as resp:
         data = await resp.json()
-    return jsonify(data=data)
+        status_code = resp.status
+    return jsonify(data=data), status_code
 
 
 @services.route('/images', methods=['GET'])
-async def get_images() -> Response:
+async def get_images() -> Tuple[Response, int]:
     params = {'Active': 'true'}
     async with app.session.get(f'{API_URL}/images', params=params) as resp:
         data = await resp.json()
-    return jsonify(data=data)
+        status_code = resp.status
+    return jsonify(data=data), status_code
 
 
 @services.route('/display_image', methods=['GET'])

@@ -4,10 +4,10 @@ import abc
 import json
 import asyncio
 from datetime import datetime
-from typing import Generator, Any, Union
+from typing import Any, List, Dict
 
 import pvl
-import aioredis  # type: ignore
+import aioredis
 import numpy as np  # type: ignore
 
 from web.pdsimage import PDSImage
@@ -44,42 +44,43 @@ class HashCache:
         """:obj:`str` : The name of the hash"""
         pass
 
-    async def exists(self, key):
+    async def exists(self, key: str) -> bool:
         return await self._rcache.hexists(await self.name, key)
 
-    async def keys(self):
+    async def keys(self) -> List[str]:
         keys = []
         for key in await self._rcache.hkeys(await self.name):
             keys.append(key.decode())
         return keys
 
-    async def get(self, key):
+    async def get(self, key: str) -> Any:
         if await self.exists(key):
             return await self._rcache.hget(await self.name, key)
         else:
             raise KeyError(f'{repr(key)}')
 
-    async def items(self):
+    async def items(self) -> Dict[str, Any]:
         keys = await self.keys()
         values = await asyncio.gather(*[self.get(key) for key in keys])
         items = dict(zip(keys, values))
         return items
 
-    async def values(self):
+    async def values(self) -> List[Any]:
         return list((await self.items()).values())
 
-    async def set(self, key, value):
+    async def set(self, key: str, value: Any) -> Any:
         if not isinstance(key, str):
             raise TypeError('key must be string')
         await self._rcache.hset(await self.name, key, value)
+        return
 
-    async def delete(self, key):
+    async def delete(self, key: str) -> None:
         if await self.exists(key):
             await self._rcache.hdel(await self.name, key)
         else:
             raise KeyError(f'{repr(key)}')
 
-    async def clear(self):
+    async def clear(self) -> None:
         await self._rcache.delete(await self.name)
 
 
@@ -134,28 +135,29 @@ class ImageCache(HashCache):
         await super().set(key, time.strftime(self._TIME_FORMAT))
         return time
 
-    async def _set_data(self, key, image):
+    async def _set_data(self, key: str, image: PDSImage) -> None:
         data = await image.data
         await super().set(f'{key}:data', data.tobytes())
 
-    async def _set_label(self, key, image):
+    async def _set_label(self, key: str, image: PDSImage) -> None:
         label = await image.label
         await super().set(f'{key}:label', pvl.dumps(label))
 
-    async def _set_dtype(self, key, image):
+    async def _set_dtype(self, key: str, image: PDSImage) -> None:
         await super().set(f'{key}:dtype', str(await image.dtype))
 
-    async def _set_shape(self, key, image):
+    async def _set_shape(self, key: str, image: PDSImage) -> None:
         await super().set(f'{key}:shape', json.dumps(await image.shape))
 
-    async def set(self, key: str, image: PDSImage) -> None:
-        await asyncio.gather(
+    async def set(self, key: str, image: PDSImage) -> datetime:
+        time, *_ = await asyncio.gather(
             self.set_time(key),
             self._set_data(key, image),
             self._set_label(key, image),
             self._set_dtype(key, image),
             self._set_shape(key, image),
         )
+        return time
 
     async def get(self, key: str) -> PDSImage:
         dtype, shape, data, label = await asyncio.gather(
@@ -171,7 +173,7 @@ class ImageCache(HashCache):
         label = pvl.loads(label)
         return PDSImage(data, label)
 
-    async def keys(self):
+    async def keys(self) -> List[str]:
         keys = []
         for key in await super().keys():
             if self._INTERNAL_KEY.search(key):
@@ -179,7 +181,7 @@ class ImageCache(HashCache):
             keys.append(key)
         return keys
 
-    async def _is_internal(self, key):
+    async def _is_internal(self, key: str) -> bool:
         if not await super().exists(key):
             return False
         if self._INTERNAL_KEY.search(key) is not None:
@@ -187,7 +189,7 @@ class ImageCache(HashCache):
         else:
             return False
 
-    async def exists(self, key):
+    async def exists(self, key: str) -> bool:
         if not await super().exists(key):
             return False
         elif await self._is_internal(key):
@@ -201,5 +203,5 @@ class ImageCache(HashCache):
 class LoadStatusCache(HashCache):
 
     @property
-    async def name(self):
+    async def name(self) -> str:
         return 'status'

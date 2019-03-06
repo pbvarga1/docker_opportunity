@@ -1,8 +1,9 @@
 import asyncio
 from io import BytesIO
-from typing import Tuple
+from typing import Tuple, Union
 
 import pvl
+import aiohttp
 import numpy as np  # type: ignore
 from matplotlib.figure import Figure  # type: ignore
 from matplotlib.backends.backend_agg import (  # type: ignore
@@ -138,7 +139,8 @@ class PDSImage:
         return (bands, lines, samples)
 
     @classmethod
-    async def from_url(cls, url: str, session, detatched: bool = False) -> 'PDSImage':
+    async def from_url(cls, url: str, session: aiohttp.ClientSession,
+                       detatched: bool = False) -> 'PDSImage':
         """Get an image from the PDS Imaging node
 
         Note this does not save a local copy of the image
@@ -181,11 +183,11 @@ class PDSImage:
         self._label = label
         self._data = data
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}({self._label["PRODUCT_ID"]})'
 
     @property
-    async def product_id(self):
+    async def product_id(self) -> str:
         return self._label['PRODUCT_ID']
 
     @property
@@ -212,11 +214,11 @@ class PDSImage:
             return 1
 
     @property
-    async def dtype(self):
+    async def dtype(self) -> np.dtype:
         return self._data.dtype
 
     @property
-    async def shape(self):
+    async def shape(self) -> Union[Tuple[int, int, int], Tuple[int, int]]:
         return self._data.shape
 
     @property
