@@ -50,7 +50,7 @@ class HashCache:
     async def keys(self):
         keys = []
         for key in await self._rcache.hkeys(await self.name):
-            keys.append(str(key))
+            keys.append(key.decode())
         return keys
 
     async def get(self, key):
@@ -59,13 +59,22 @@ class HashCache:
         else:
             raise KeyError(f'{repr(key)}')
 
+    async def items(self):
+        keys = await self.keys()
+        values = await asyncio.gather(*[self.get(key) for key in keys])
+        items = dict(zip(keys, values))
+        return items
+
+    async def values(self):
+        return list((await self.items()).values())
+
     async def set(self, key, value):
         if not isinstance(key, str):
             raise TypeError('key must be string')
         await self._rcache.hset(await self.name, key, value)
 
     async def delete(self, key):
-        if await key in self:
+        if await self.exists(key):
             await self._rcache.hdel(await self.name, key)
         else:
             raise KeyError(f'{repr(key)}')
@@ -100,7 +109,7 @@ class ImageCache(HashCache):
         time : :class:`datetime.datetime`
             The time the image was set in the cache
         """
-        stamp = await super().get(key)
+        stamp = (await super().get(key)).decode()
         time = datetime.strptime(stamp, self._TIME_FORMAT)
         return time
 
@@ -164,10 +173,11 @@ class ImageCache(HashCache):
 
     async def keys(self):
         keys = []
-        for key in super().keys():
+        for key in await super().keys():
             if self._INTERNAL_KEY.search(key):
                 continue
             keys.append(key)
+        return keys
 
     async def _is_internal(self, key):
         if not await super().exists(key):

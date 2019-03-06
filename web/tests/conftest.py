@@ -1,4 +1,5 @@
 import time
+import asyncio
 from unittest.mock import patch
 
 import pvl
@@ -11,15 +12,22 @@ from web import redis_cache, pdsimage
 TEST_REDIS_PORT = 6380
 
 
+@pytest.yield_fixture(scope='session')
+def event_loop(request):
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
+
+
 @pytest.fixture(scope='session', autouse=True)
-def redis_server_config():
+async def redis_server_config():
     port_patch = patch('web.redis_cache.REDIS_PORT', TEST_REDIS_PORT)
     with port_patch:
         yield
 
 
 @pytest.fixture(scope='session')
-def docker_container():
+async def docker_container():
     client = docker.from_env()
     client.images.pull(
         repository='redis',
@@ -51,15 +59,15 @@ def docker_container():
 
 
 @pytest.fixture
-def rcache(docker_container):
-    cache = redis_cache.get_rcache()
-    cache.flushall()
+async def rcache(docker_container):
+    cache = await redis_cache.get_rcache()
+    await cache.flushall()
     yield cache
-    cache.flushall()
+    await cache.flushall()
 
 
 @pytest.fixture(scope='function')
-def label():
+async def label():
     label = pvl.PVLModule({
         'RECORD_BYTES': 3,
         '^IMAGE': 66,
@@ -79,7 +87,7 @@ DTYPE = np.dtype('>i2')
 
 
 @pytest.fixture(scope='function')
-def image(label):
+async def image(label):
     data = np.arange(1, 25).reshape((3, 2, 4))
     data = data.astype(DTYPE)
     im = pdsimage.PDSImage(data, label.copy())
@@ -87,7 +95,7 @@ def image(label):
 
 
 @pytest.fixture(scope='function')
-def gray_image(label):
+async def gray_image(label):
     data = np.arange(1, 9).reshape((1, 2, 4))
     data = data.astype(DTYPE)
     im = pdsimage.PDSImage(data, label.copy())
