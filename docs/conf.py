@@ -55,6 +55,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'numpydoc',
+    'sphinxcontrib.asyncio',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -198,7 +199,9 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
     'numpy': ('https://numpy.readthedocs.io/en/latest/', None),
     'pvl': ('https://pvl.readthedocs.io/en/latest/', None),
-    'redis': ('https://redis-py.readthedocs.io/en/latest/', None)
+    'redis': ('https://redis-py.readthedocs.io/en/latest/', None),
+    'aiohttp': ('https://aiohttp.readthedocs.io/en/stable/', None),
+    'aioredis': ('https://aioredis.readthedocs.io/en/latest/', None),
 }
 autodoc_member_order = 'bysource'
 numpydoc_show_class_members = False

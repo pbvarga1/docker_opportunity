@@ -11,3 +11,4 @@ numpydoc==0.8.0
 openapi-spec-validator==0.2.6
 pytest-asyncio==0.10.0
 pytest-aiohttp==0.3.0
+sphinxcontrib-asyncio==0.2.0

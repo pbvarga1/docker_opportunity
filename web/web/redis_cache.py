@@ -33,6 +33,14 @@ async def get_rcache() -> aioredis.Redis:
 class HashCache:
 
     def __init__(self, rcache: aioredis.Redis):
+        """Base class for redis cache interface for hashes
+
+        Parameters
+        ----------
+        rcache : :class:`aioredis.Redis`
+            Connected redis instance
+        """
+
         self._rcache = rcache
 
     def __repr__(self):
@@ -45,42 +53,110 @@ class HashCache:
         pass
 
     async def exists(self, key: str) -> bool:
+        """Determine if a key in the hash exists
+
+        Parameters
+        ----------
+        key : :obj:`str`
+            The name of the key
+
+        Returns
+        -------
+        exists : :obj:`bool`
+            Whether or not the key exists
+        """
+
         return await self._rcache.hexists(await self.name, key)
 
     async def keys(self) -> List[str]:
+        """Get all the keys in the hash
+
+        Returns
+        -------
+        keys : :obj:`list`[:obj:`str`]
+            The keys in the hash
+        """
+
         keys = []
         for key in await self._rcache.hkeys(await self.name):
             keys.append(key.decode())
         return keys
 
     async def get(self, key: str) -> Any:
+        """Get the value of a key
+
+        Parameters
+        ----------
+        key : :obj:`str`
+            The name of the key
+
+        Returns
+        -------
+        value : :obj:`bytes`
+            The bytes of the value at that key
+        """
+
         if await self.exists(key):
             return await self._rcache.hget(await self.name, key)
         else:
             raise KeyError(f'{repr(key)}')
 
     async def items(self) -> Dict[str, Any]:
+        """Get all the items in the hash
+
+        Returns
+        -------
+        items : :obj:`items`
+            The items in the hash
+        """
+
         keys = await self.keys()
         values = await asyncio.gather(*[self.get(key) for key in keys])
         items = dict(zip(keys, values))
         return items
 
     async def values(self) -> List[Any]:
+        """Get all the values in the hash
+
+        Returns
+        -------
+        values : :obj:`list`
+            The values in the hash
+        """
+
         return list((await self.items()).values())
 
     async def set(self, key: str, value: Any) -> Any:
+        """Set a value to a key in the hash
+
+        Parameters
+        ----------
+        key : :obj:`str`
+            The key to set
+        value : :obj:`str`
+            The string value to set
+        """
+
         if not isinstance(key, str):
             raise TypeError('key must be string')
         await self._rcache.hset(await self.name, key, value)
-        return
 
     async def delete(self, key: str) -> None:
+        """Delete a key from the hash
+
+        Parameters
+        ----------
+        key : :obj:`str`
+            The name of the key
+        """
+
         if await self.exists(key):
             await self._rcache.hdel(await self.name, key)
         else:
             raise KeyError(f'{repr(key)}')
 
     async def clear(self) -> None:
+        """Clear all entries in the hash"""
         await self._rcache.delete(await self.name)
 
 
@@ -149,17 +225,37 @@ class ImageCache(HashCache):
     async def _set_shape(self, key: str, image: PDSImage) -> None:
         await super().set(f'{key}:shape', json.dumps(await image.shape))
 
-    async def set(self, key: str, image: PDSImage) -> datetime:
-        time, *_ = await asyncio.gather(
+    async def set(self, key: str, image: PDSImage) -> None:
+        """Set an image in the hash
+
+        The hash interface know how to properly store images so the high level
+        just needs to set the image object itself
+
+        Parameters
+        ----------
+        key : :obj:`str`
+            The name of the image
+        image : :class:`PDSImage`
+            The image to cache
+        """
+
+        await asyncio.gather(
             self.set_time(key),
             self._set_data(key, image),
             self._set_label(key, image),
             self._set_dtype(key, image),
             self._set_shape(key, image),
         )
-        return time
 
     async def get(self, key: str) -> PDSImage:
+        """Get an image from the cache
+
+        Parameters
+        ----------
+        key : :obj:`str`
+            The name of the image
+        """
+
         dtype, shape, data, label = await asyncio.gather(
             super().get(f'{key}:dtype'),
             super().get(f'{key}:shape'),
@@ -174,6 +270,14 @@ class ImageCache(HashCache):
         return PDSImage(data, label)
 
     async def keys(self) -> List[str]:
+        """Get a list of image names in the cache
+
+        Returns
+        -------
+        keys : :obj:`list`[`str`]
+            Names of images in the cache
+        """
+
         keys = []
         for key in await super().keys():
             if self._INTERNAL_KEY.search(key):
@@ -190,6 +294,19 @@ class ImageCache(HashCache):
             return False
 
     async def exists(self, key: str) -> bool:
+        """Determine if an image is in the cache
+
+        Parameters
+        ----------
+        key : :obj:`str`
+            Name of the image
+
+        Returns
+        -------
+        exists : :obj:`bool`
+            Whether or not the image is in the cache
+        """
+
         if not await super().exists(key):
             return False
         elif await self._is_internal(key):

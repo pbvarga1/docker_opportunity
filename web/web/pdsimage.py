@@ -140,7 +140,7 @@ class PDSImage:
 
     @classmethod
     async def from_url(cls, url: str, session: aiohttp.ClientSession,
-                       detatched: bool = False) -> 'PDSImage':
+                       detached: bool = False) -> 'PDSImage':
         """Get an image from the PDS Imaging node
 
         Note this does not save a local copy of the image
@@ -149,8 +149,10 @@ class PDSImage:
         ----------
         url : :obj:`str`
             The url to the image in the pds imaging node
-        detatched : :obj:`bool`
-            Whether or not the label is detatched. ``False`` by default
+        session : :class:`aiohttp.ClientSession`
+            Open client session for making requests asynchronously
+        detached : :obj:`bool`
+            Whether or not the label is detached. ``False`` by default
 
         Returns
         -------
@@ -160,7 +162,7 @@ class PDSImage:
 
         async with session.get(url) as resp:
             content = await resp.read()
-        if detatched:
+        if detached:
             async with session.get(url.replace('.img', '.lbl')) as resp:
                 lbl_content = await resp.read()
         else:
@@ -188,6 +190,7 @@ class PDSImage:
 
     @property
     async def product_id(self) -> str:
+        """:obj:`str` : The product ID from the label"""
         return self._label['PRODUCT_ID']
 
     @property
@@ -215,10 +218,12 @@ class PDSImage:
 
     @property
     async def dtype(self) -> np.dtype:
+        """:class:`numpy.dtype` : The data's dtype"""
         return self._data.dtype
 
     @property
     async def shape(self) -> Union[Tuple[int, int, int], Tuple[int, int]]:
+        """":obj:`tuple` : The data's shape"""
         return self._data.shape
 
     @property
