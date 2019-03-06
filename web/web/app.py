@@ -1,5 +1,5 @@
 import posixpath
-from typing import Tuple, List, Any, Optional, Awaitable
+from typing import Tuple, List, Any, Awaitable
 
 import aiohttp
 from quart import (
@@ -57,7 +57,7 @@ async def _create_resource(resource_name: str,
         if is_upper:
             name = name.upper()
         data = {'Name': name}
-    except KeyError as e:
+    except KeyError:
         return {'error': 'json format should be {"name": "<value>"}'}, 400
     async with app.session.post(url, json=data) as resp:
         data = await resp.json()

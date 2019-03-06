@@ -1,10 +1,7 @@
-import json
 from time import sleep
-from unittest import mock
 
 import pytest
 import aiohttp
-from flask import Response
 
 from web import app
 from web.redis_cache import ImageCache

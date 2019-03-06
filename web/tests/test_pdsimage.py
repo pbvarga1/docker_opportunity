@@ -1,5 +1,4 @@
 from io import BytesIO
-from unittest import mock
 
 import pvl
 import pytest
