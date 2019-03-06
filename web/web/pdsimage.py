@@ -3,7 +3,6 @@ from io import BytesIO
 from typing import Tuple
 
 import pvl
-import requests
 import numpy as np  # type: ignore
 from matplotlib.figure import Figure  # type: ignore
 from matplotlib.backends.backend_agg import (  # type: ignore
@@ -139,7 +138,7 @@ class PDSImage:
         return (bands, lines, samples)
 
     @classmethod
-    async def from_url(cls, url: str, detatched: bool = False, session=None) -> 'PDSImage':
+    async def from_url(cls, url: str, session, detatched: bool = False) -> 'PDSImage':
         """Get an image from the PDS Imaging node
 
         Note this does not save a local copy of the image
@@ -183,7 +182,7 @@ class PDSImage:
         self._data = data
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({self.product_id})'
+        return f'{self.__class__.__name__}({self._label["PRODUCT_ID"]})'
 
     @property
     async def product_id(self):

@@ -2,75 +2,100 @@ from io import BytesIO
 from unittest import mock
 
 import pvl
+import pytest
+import aiohttp
 import numpy as np
 
 from web import pdsimage
 
 
-def test_get_start_byte(label):
-    assert pdsimage.PDSImage._get_start_byte(label) == 195
+@pytest.mark.asyncio
+async def test_get_start_byte(label):
+    assert await pdsimage.PDSImage._get_start_byte(label) == 195
     label['^IMAGE'] = pvl.Units(5, 'BYTES')
-    assert pdsimage.PDSImage._get_start_byte(label) == 5
+    assert await pdsimage.PDSImage._get_start_byte(label) == 5
 
 
-def test_get_shape(label):
-    assert pdsimage.PDSImage._get_shape(label) == (3, 2, 4)
+@pytest.mark.asyncio
+async def test_get_shape(label):
+    assert await pdsimage.PDSImage._get_shape(label) == (3, 2, 4)
 
 
-@mock.patch('web.pdsimage.requests', autospect=True)
-def test_from_url(mock_requests, image):
-    response = mock.MagicMock()
-    mock_requests.get.return_value = response
-    print(image.label['^IMAGE'])
-    print(len(pvl.dumps(image.label) + b'\r\n'))
-    response.content = pvl.dumps(image.label) + b'\r\n' + image.data.tobytes()
-    url = 'path/image.img'
-    im = pdsimage.PDSImage.from_url(url)
-    response.raise_for_status.assert_called_once_with()
-    mock_requests.get.assert_called_with(url)
-    np.testing.assert_array_equal(im.data, image.data)
+async def test_from_url(aiohttp_client, image):
+    async def download_image(request):
+        data = await image.data
+        label = await image.label
+        body = pvl.dumps(label) + b'\r\n' + data.tobytes()
+        return aiohttp.web.Response(body=body)
+    app = aiohttp.web.Application()
+    url = '/image.img'
+    app.router.add_get(url, download_image)
+    client = await aiohttp_client(app)
+    im = await pdsimage.PDSImage.from_url(url, client)
+    np.testing.assert_array_equal(await im.data, await image.data)
 
+    # Test detatched
+    async def download_image(request):
+        data = await image.data
+        body = data.tobytes()
+        return aiohttp.web.Response(body=body)
 
-@mock.patch('web.pdsimage.requests', autospect=True)
-def test_from_url_detatched(mock_requests, image):
+    async def download_label(request):
+        label = await image.label
+        body = pvl.dumps(label)
+        return aiohttp.web.Response(body=body)
+
     image._label['^IMAGE'] = 1
-    response1 = mock.MagicMock()
-    response2 = mock.MagicMock()
-    response1.content = image.data.tobytes()
-    response2.content = pvl.dumps(image.label)
-    mock_requests.get.side_effect = [response1, response2]
-    url = 'path/image.img'
-    im = pdsimage.PDSImage.from_url(url, detatched=True)
-    np.testing.assert_array_equal(im.data, image.data)
-    mock_requests.get.assert_has_calls([
-        mock.call(url),
-        mock.call('path/image.lbl'),
-    ])
-    response1.raise_for_status.assert_called_once_with()
-    response2.raise_for_status.assert_called_once_with()
+
+    app = aiohttp.web.Application()
+    app.router.add_get(url, download_image)
+    app.router.add_get('/image.lbl', download_label)
+    client = await aiohttp_client(app)
+    im = await pdsimage.PDSImage.from_url(url, client, True)
+    np.testing.assert_array_equal(await im.data, await image.data)
 
 
-def test_data(image):
-    assert image.data is not image._data
-    np.testing.assert_array_equal(image.data, image._data)
+@pytest.mark.asyncio
+async def test_product_id(image):
+    assert await image.product_id == 'testimg'
 
 
-def test_label(image):
-    assert image.label is not image._label
-    assert image.label == image._label
+@pytest.mark.asyncio
+async def test_data(image):
+    assert await image.data is not image._data
+    np.testing.assert_array_equal(await image.data, image._data)
 
 
-def test_bands(image, gray_image):
-    assert image.bands == 3
-    assert gray_image.bands == 1
+@pytest.mark.asyncio
+async def test_label(image):
+    assert await image.label is not image._label
+    assert await image.label == image._label
 
 
-def test_image(image, gray_image):
-    assert image.image.shape == (2, 4, 3)
-    assert gray_image.image.shape == (2, 4)
+@pytest.mark.asyncio
+async def test_bands(image, gray_image):
+    assert await image.bands == 3
+    assert await gray_image.bands == 1
 
 
-def test_get_png_output(image, gray_image):
-    assert isinstance(image.get_png_output(), BytesIO)
-    assert b'PNG' in image.get_png_output().getvalue()
-    assert b'PNG' in gray_image.get_png_output().getvalue()
+@pytest.mark.asyncio
+async def test_dtype(image):
+    assert str(await image.dtype) == '>i2'
+
+
+@pytest.mark.asyncio
+async def test_shape(image):
+    assert await image.shape == (3, 2, 4)
+
+
+@pytest.mark.asyncio
+async def test_image(image, gray_image):
+    assert (await image.image).shape == (2, 4, 3)
+    assert (await gray_image.image).shape == (2, 4)
+
+
+@pytest.mark.asyncio
+async def test_get_png_output(image, gray_image):
+    assert isinstance(await image.get_png_output(), BytesIO)
+    assert b'PNG' in (await image.get_png_output()).getvalue()
+    assert b'PNG' in (await gray_image.get_png_output()).getvalue()
