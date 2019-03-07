@@ -3,18 +3,23 @@ import re
 import abc
 import json
 import asyncio
+import logging
 from datetime import datetime
 from typing import Any, List, Dict, Union
 
 import pvl
 import aioredis
 import numpy as np  # type: ignore
+from async_lru import alru_cache
 
 from web.pdsimage import PDSImage
 
 REDIS_PORT = 6379
 
+logger = logging.getLogger(__name__)
 
+
+@alru_cache()
 async def get_rcache() -> aioredis.Redis:
     """Get a redis object to interact with the redis cache in docker
 
@@ -248,6 +253,8 @@ class ImageCache(HashCache):
             The image to cache
         """
 
+        logger.info(f'Seting {key}: {repr(PDSImage)} to ImageCache')
+
         await asyncio.gather(
             self.set_time(key),
             self._set_data(key, image),
@@ -265,6 +272,7 @@ class ImageCache(HashCache):
             The name of the image
         """
 
+        logger.info(f'Getting {key} from ImageCache')
         dtype, shape, data, label = await asyncio.gather(
             super().get(f'{key}:dtype'),
             super().get(f'{key}:shape'),
@@ -339,6 +347,7 @@ class ProgressCache(RedisCache):
         )
 
     async def start(self, ID: str, size: int) -> None:
+        logger.info(f'{ID} progress started')
         await self._set(ID, 0.0, 0, size)
 
     async def _exists(self, key: str) -> bool:
@@ -362,8 +371,12 @@ class ProgressCache(RedisCache):
             ]
             progress, total, size = await asyncio.gather(*awaitables)
             total += chunk
+            if total >= size:
+                total = size
+                logger.info(f'{ID} progress finished')
             progress = total / size
             await self._set(ID, progress, total, size)
 
     async def get(self, ID: str) -> float:
+        logger.infor(f'Getting Progress {ID}')
         return await self._get(ID, float)

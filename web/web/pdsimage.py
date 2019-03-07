@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from io import BytesIO
 from typing import Tuple, Union, Any
 
@@ -9,6 +10,8 @@ from matplotlib.figure import Figure  # type: ignore
 from matplotlib.backends.backend_agg import (  # type: ignore
     FigureCanvasAgg as FigureCanvas,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class PDSImage:
@@ -163,6 +166,7 @@ class PDSImage:
         chunks = 100
         progress_cache, progress_id = progress
         content = b''
+        logger.info(f'Downloading {url}')
         async with session.get(url) as resp:
             size = resp.headers['Content-Length']
             start_awaited = False
@@ -176,6 +180,7 @@ class PDSImage:
 
         if detached:
             lbl_content = b''
+            logger.info('Downloading Label')
             async with session.get(url.replace('.img', '.lbl')) as resp:
                 size = resp.headers['Content-Length']
                 start_awaited = False
@@ -266,6 +271,7 @@ class PDSImage:
             Image as a bytes object for viewing on a webpage
         """
 
+        logger.info('Getting png Output')
         fig = Figure()
         ax = fig.add_subplot(111)
         fig.patch.set_visible(False)
