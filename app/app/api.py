@@ -45,7 +45,7 @@ def get_resource(Resource: Base, ID: int) -> Union[dict, List[dict]]:
 
 
 def create_resource(Resource: Base, **kwargs) -> dict:
-    logger.info(f'Creating Resource: {type(Resource).__name__}')
+    logger.info(f'Creating Resource: {Resource.__name__}')
     data = get_data_from_json()
     try:
         resource = Resource.from_dict(data)
@@ -55,7 +55,7 @@ def create_resource(Resource: Base, **kwargs) -> dict:
         return resource.to_dict()
     except Exception as e:
         logger.exception(
-            f'Failed to create eesource: {type(Resource).__name__}'
+            f'Failed to create eesource: {Resource.__name__}'
         )
         abort(
             400,
@@ -69,21 +69,21 @@ def update_resource(Resource: Base, ID: Optional[int] = None,
     if ID is not None:
         resource = Resource.query.filter_by(ID=ID).first_or_404()
         logger.info(
-            f'Updating resource {type(Resource).__name__} with ID {ID}'
+            f'Updating resource {Resource.__name__} with ID {ID}'
         )
     else:
         params = get_query_string_params()
         resources = Resource.query.filter_by(**params).all()
         if not resources:
             msg = (
-                f'Could not find resource {type(Resource).__name__} '
+                f'Could not find resource {Resource.__name__} '
                 f'with params: {params}'
             )
             logger.error(msg)
             abort(404, msg)
         elif len(resources) > 1:
             msg = (
-                f'Found too many resources {type(Resource).__name__} '
+                f'Found too many resources {Resource.__name__} '
                 f'with params: {params}'
             )
             logger.error(msg)
@@ -91,8 +91,8 @@ def update_resource(Resource: Base, ID: Optional[int] = None,
         else:
             resource = resources[0]
             logger.info(
-                f'Updating resource {type(Resource).__name__} with '
-                f'ID {resource["ID"]}'
+                f'Updating resource {Resource.__name__} with '
+                f'ID {resource.ID}'
             )
     data = get_data_from_json()
     resource.update_from_dict(data)
@@ -107,7 +107,7 @@ def delete_resource(Resource: Base, ID: int) -> dict:
         msg = 'Delete must have an ID'
         logger.error(msg)
         abort(400, msg)
-    logger.info(f'Deleting resource {type(Resource).__name__} with ID {ID}')
+    logger.info(f'Deleting resource {Resource.__name__} with ID {ID}')
     resource = Resource.query.filter_by(ID=ID).first_or_404()
     resource.delete()
     db.session.add(resource)

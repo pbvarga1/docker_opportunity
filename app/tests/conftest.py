@@ -10,6 +10,11 @@ from app import config
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
+@pytest.fixture(autouse=True)
+def turn_off_sentry(mocker):
+    mocker.patch('app.constants.DSN', '')
+
+
 @pytest.fixture(scope='session')
 def docker_container():
     client = docker.from_env()
