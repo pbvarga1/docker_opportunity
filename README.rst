@@ -1,10 +1,20 @@
 Opportunity App
 ===============
 
-.. image:: https://travis-ci.com/pbvarga1/opportunity.svg?branch=master
+.. image:: https://travis-ci.com/pbvarga1/opportunity.svg?branch=flask-frontend
     :target: https://travis-ci.com/pbvarga1/opportunity
-.. image:: https://coveralls.io/repos/github/pbvarga1/opportunity/badge.svg?branch=master
-    :target: https://coveralls.io/github/pbvarga1/opportunity?branch=master
+.. image:: https://coveralls.io/repos/github/pbvarga1/opportunity/badge.svg?branch=flask-frontend
+    :target: https://coveralls.io/github/pbvarga1/opportunity?branch=flask-frontend
+.. image:: https://img.shields.io/github/license/pbvarga1/opportunity.svg?style=plastic
+    :target: https://github.com/pbvarga1/opportunity/blob/master/LICENSE
+.. image:: https://img.shields.io/badge/python-3.7-blue.svg
+    :target: https://www.python.org/downloads/release/python-371/
+.. image:: https://img.shields.io/badge/AngularJS-1.6.9-red.svg
+    :target: https://docs.angularjs.org/guide
+
+
+.. contents:: Table of Contents
+    :local:
 
 
 I want to play around with some programming techniques (listed below). This
@@ -13,16 +23,33 @@ guarantee that they are all the *best* way to do things as I am just learning).
 To explore these techniques, I'm creating a simple app and adding just enough
 complexity to serve as real world examples without it becoming too large. The
 application is a local website where one can look at images taken by the
-opportunity rover. This website will have a PostgreSQL database which is
-managed by Flask-SQLAlchemy. The front-end will be run by flask. These services
-are extracted into different applications called ``app`` and ``web``. See the
+opportunity rover. As a note, the front-end is not my main concern, most of the
+skills I want to practice regard the back-end. To maintain my work, I separate
+different uses of packages into different branches. For example, I have a branch
+for a Flask front-end and a branch for a Quart front-end (see _Branches). See the
 issues for what I plan to do going forward.
 
+Branches
+--------
+
+.. _Master: https://github.com/pbvarga1/opportunity#opportunity-app
+.. _Flask-Frontend: https://github.com/pbvarga1/opportunity/tree/flask-frontend#opportunity-app
+
++-------------------+------------------------------------------------+
+| Name              | Description                                    |
++===================+================================================+
+| Master_           | Flask-Sqlalchemy back-end with Quart front-end |
++-------------------+------------------------------------------------+
+| `Flask-Frontend`_ | Flask-sqlalchemy back-end with Flask front-end |
++-------------------+------------------------------------------------+
 
 Software
 --------
 
-Software/techniques/packages used so far.
+Software/techniques/packages used so far. Different branches will have different features and are broken up by branch name.
+
+Union
++++++
 
 * `Docker <https://docs.docker.com/>`_
 
@@ -32,9 +59,6 @@ Software/techniques/packages used so far.
     * `Multistage build <https://docs.docker.com/develop/develop-images/multistage-build/>`_
 
 * `PostgreSQL <https://www.postgresql.org/docs/>`_
-* `Flask <http://flask.pocoo.org/>`_
-
-    * `Blueprints <http://flask.pocoo.org/docs/1.0/blueprints/>`_
 
 * `Flask-SQLAlchemy <http://flask-sqlalchemy.pocoo.org/2.3/>`_
 * `REST API <https://en.wikipedia.org/wiki/Representational_state_transfer>`_
@@ -44,10 +68,6 @@ Software/techniques/packages used so far.
     * `components <https://docs.angularjs.org/guide/component>`_
     * `routing <https://docs.angularjs.org/tutorial/step_09>`_
     * `services <https://docs.angularjs.org/api/ng/type/angular.Module#service>`_
-
-* Flask + Angular
-
-    * Routing to multiple pages handled by Angular through Flask
 
 * `pytest <https://docs.pytest.org/en/latest/contents.html>`_
 
@@ -91,6 +111,32 @@ Software/techniques/packages used so far.
 
 * `Numpy Docstrings <https://numpydoc.readthedocs.io/en/latest/format.html>`_
 
+Master
+++++++
+
+* `Async/Await <https://www.python.org/dev/peps/pep-0492/#specification>`_
+* `Asyncio <https://docs.python.org/3/library/asyncio.html>`_
+* `Quart <http://pgjones.gitlab.io/quart/>`_
+
+    * Use with Angular
+    * `Blueprints <http://pgjones.gitlab.io/quart/blueprints.html>`_
+
+* `AIOHTTP <https://aiohttp.readthedocs.io/en/stable/>`_
+* `aioredis <https://aioredis.readthedocs.io/en/v1.2.0/>`_
+* `pytest-asyncio <https://github.com/pytest-dev/pytest-asyncio>`_
+* `pytest-aiohttp <https://docs.aiohttp.org/en/stable/testing.html>`_
+* `pytest-mock <https://github.com/pytest-dev/pytest-mock/>`_
+
+Flask-Frontend
+++++++++++++++
+
+* Flask + Angular
+
+    * Routing to multiple pages handled by Angular through Flask
+
+* `Flask <http://flask.pocoo.org/>`_
+
+    * `Blueprints <http://flask.pocoo.org/docs/1.0/blueprints/>`_
 
 Quick Start
 -----------
