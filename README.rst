@@ -162,6 +162,14 @@ Make sure docker is installed and running. To get the application running:
 2. You will need to adjust the volumes in ``docker-compose.yml`` to your own
    paths.
 
+3. If using a volume for the `opp-web`` service (as I do), you have to install
+   the node packages first. ``cd`` into the directory with the ``package.json``
+   file and then
+
+   .. code-block:: bash
+
+     $ yarn install --modules-folder static/node_modules
+
 3. To get sentry working, follow the instructions from
    `Sentry on Premise <https://github.com/getsentry/onpremise>`_ reproduced
    below:
