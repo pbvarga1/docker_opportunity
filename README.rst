@@ -25,9 +25,9 @@ complexity to serve as real world examples without it becoming too large. The
 application is a local website where one can look at images taken by the
 opportunity rover. As a note, the front-end is not my main concern, most of the
 skills I want to practice regard the back-end. To maintain my work, I separate
-different uses of packages into different branches. For example, I have a branch
-for a Flask front-end and a branch for a Quart front-end (see _Branches). See the
-issues for what I plan to do going forward.
+different uses of packages into different branches. For example, I have a
+branch for a Flask front-end and a branch for a Quart front-end (see
+Branches_). See the issues for what I plan to do going forward.
 
 Branches
 --------
@@ -126,6 +126,12 @@ Master
 * `pytest-asyncio <https://github.com/pytest-dev/pytest-asyncio>`_
 * `pytest-aiohttp <https://docs.aiohttp.org/en/stable/testing.html>`_
 * `pytest-mock <https://github.com/pytest-dev/pytest-mock/>`_
+* `logging <https://docs.python.org/3/library/logging.html>`_
+* `Sentry <https://sentry.io/welcome/>`_
+
+    * `Sentry On-Premise: Docker <https://github.com/getsentry/onpremise>`_
+    * `Python sentry_sdk <https://docs.sentry.io/error-reporting/quickstart/?platform=python>`_
+    * `AngularJS sentry_sdk <https://docs.sentry.io/error-reporting/quickstart/?platform=node#pick-a-client-integration>`_
 
 Flask-Frontend
 ++++++++++++++
@@ -143,18 +149,39 @@ Quick Start
 
 If you want to use this project for your own learning exercises, fork the repo
 to your own github account and then clone your forked repo to your computer.
-Make sure docker is installed and running. If you are **not** using docker
-toolbox, set the following environment envariable:
+Make sure docker is installed and running. To get the application running:
 
-.. code-block:: bash
+1. If you are **not** using docker
+   toolbox, set the following environment envariable:
 
-    $ export DOCKER_IP='127.0.0.1'
+   .. code-block:: bash
 
-From the top directory ``oportunity``, run:
+      $ export DOCKER_IP='127.0.0.1'
 
-.. code-block:: bash
 
-    $ docker-compose up
+2. You will need to adjust the volumes in ``docker-compose.yml`` to your own
+   paths.
+
+3. To get sentry working, follow the instructions from
+   `Sentry on Premise <https://github.com/getsentry/onpremise>`_ reproduced
+   below:
+
+    1. ``docker volume create --name=sentry-data && docker volume create --name=opportunity-postgres``
+    2. Make adjustments to the ``.env`` file.
+    3. ``docker-compose build`` - Build and tag the Docker services
+    4. ``docker-compose run --rm web config generate-secret-key`` - Generate a
+       secret key. Add it to ``.env`` as ``SENTRY_SECRET_KEY``.
+    5. ``docker-compose run --rm web upgrade`` - Build the database. Use the
+       interactive prompts to create a user account.
+
+        * If you never get to the interactive prompt, you need to make room
+          by deleting images and volumes.
+
+4. From the top directory ``oportunity``, run:
+
+     .. code-block:: bash
+
+        $ docker-compose up
 
 
 Which will build the images and run the docker containers. If you are using
@@ -184,4 +211,6 @@ Links
 |   **Docs**     | http://192.168.99.100:5005/ | http://127.0.0.1:5005/ |
 +----------------+-----------------------------+------------------------+
 |   **Swagger**  | http://192.168.99.100:5004/ | http://127.0.0.1:5004/ |
++----------------+-----------------------------+------------------------+
+|   **Sentry**   | http://192.168.99.100:9000/ | http://127.0.0.1:9000/ |
 +----------------+-----------------------------+------------------------+
