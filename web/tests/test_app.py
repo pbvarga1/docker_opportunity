@@ -90,7 +90,7 @@ async def test_index(mocker, client, cli):
     render_template.side_effect = make_response
     for route in ['', 'cameras', 'product_types']:
         await client.get(f'/{route}')
-        render_template.assert_called_with('index.html')
+        render_template.assert_called_with('index.html', DSN='')
 
 
 async def test_create_product_type(client, cli):
