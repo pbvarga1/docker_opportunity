@@ -1,6 +1,6 @@
 import asyncio
 from io import BytesIO
-from typing import Tuple, Union
+from typing import Tuple, Union, Any
 
 import pvl
 import aiohttp
@@ -140,6 +140,7 @@ class PDSImage:
 
     @classmethod
     async def from_url(cls, url: str, session: aiohttp.ClientSession,
+                       progress: Tuple[Any, str],
                        detached: bool = False) -> 'PDSImage':
         """Get an image from the PDS Imaging node
 
@@ -159,12 +160,32 @@ class PDSImage:
         image : :class:`PDSImage`
             The image from the url
         """
-
+        chunks = 100
+        progress_cache, progress_id = progress
+        content = b''
         async with session.get(url) as resp:
-            content = await resp.read()
+            size = resp.headers['Content-Length']
+            start_awaited = False
+            start_fut = progress_cache.start(progress_id, size)
+            async for cont_chunk in resp.content.iter_chunked(chunks):
+                content += cont_chunk
+                if not start_awaited:
+                    await start_fut
+                    start_awaited = True
+                await progress_cache.progress(progress_id, chunks)
+
         if detached:
+            lbl_content = b''
             async with session.get(url.replace('.img', '.lbl')) as resp:
-                lbl_content = await resp.read()
+                size = resp.headers['Content-Length']
+                start_awaited = False
+                start_fut = progress_cache.start(progress_id, size)
+                async for cont_chunk in resp.content.iter_chunked(chunks):
+                    lbl_content += cont_chunk
+                    if not start_awaited:
+                        await start_fut
+                        start_awaited = True
+                    await progress_cache.progress(progress_id, chunks)
         else:
             lbl_content = content
         label = pvl.loads(lbl_content, strict=False)

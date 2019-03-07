@@ -1,6 +1,6 @@
 angular.module('homeApp').component('home', {
     templateUrl: '/static/pages/home/template.html',
-    controller: function homeController($uibModal, homeService) {
+    controller: function homeController($uibModal, $timeout, homeService) {
         $ctrl = this;
         $ctrl.productTypeName = '';
         $ctrl.selectedProductType = null;
@@ -9,10 +9,14 @@ angular.module('homeApp').component('home', {
         $ctrl.selectedCamera = null;
         $ctrl.cameras = [];
         $ctrl.allImages = [];
+        $ctrl.progress = {};
         $ctrl.imageSrc = '';
         setProductTypes();
         setCameras();
-        setImages();
+        setImages().then(function (data){
+            cacheImages(data);
+            setImages();
+        });
 
         function setProductTypes() {
             homeService.getProductTypes().then(function(data) {
@@ -39,9 +43,61 @@ angular.module('homeApp').component('home', {
         }
 
         function setImages() {
-            homeService.getImages().then(function(data) {
+            return homeService.getImages().then(function(data) {
                 $ctrl.allImages = data.data.data;
+                return data.data.data;
             });
+        }
+
+        function cacheImage(image) {
+            return homeService.cacheImage(image);
+        }
+
+        function cacheImages(images) {
+            return angular.forEach(images, function(image, idx) {
+                cacheImage(
+                    {
+                        url: image['URL'],
+                        name: image['Name']
+                    }
+                );
+                setProgress(image['Name'])
+            });
+        }
+
+        $ctrl.setProgress = function(ID) {
+            var progress = -1;
+            progressPromise = homeService.getProgress(ID).then(
+                function(data) {
+                    progress = data.data.data;
+                    if (progress == -1) {
+                        $timeout(function() {
+                            $ctrl.setProgress(ID)
+                        }, 300);
+                    } else {
+                        progress = progress * 100;
+                        $ctrl.progress[ID] = progress
+                        $timeout(function() {
+                            $ctrl.setProgress(ID)
+                        }, 100);
+                    }
+                    return progress
+                },
+                function(data) {
+                    console.log('ERROR');
+                    return 100;
+                }
+            );
+            return progressPromise;
+            
+        };
+
+        $ctrl.getProgress = function(ID) {
+            var progress = $ctrl.progress[ID];
+            if (progress === null)
+                return 100;
+            else
+                return progress;
         }
 
         $ctrl.openCreateImage = function() {
@@ -59,8 +115,20 @@ angular.module('homeApp').component('home', {
 
             modalInstance.result.then(
                 function(new_image) {
+                    var image;
                     homeService.registerImage(new_image).then(function(data) {
-                        setImages();
+                        image = data.data.data;
+                        setImages().then(function(data) {
+                            cacheImage(
+                                {
+                                    url: image['URL'],
+                                    name: image['Name']
+                                }
+                            ).then(function() {
+                                setImages();
+                            });
+                            $ctrl.setProgress(image['Name']);
+                        });
                     });
                 },
                 function() {
@@ -69,9 +137,9 @@ angular.module('homeApp').component('home', {
             );
         };
 
-        $ctrl.displayImage = function() {
-            $ctrl.imageSrc = '/services/display_image?url=' + $ctrl.selectedImage['URL'];
-        };
+        $ctrl.getImageSource = function(image) {
+            return '/services/display_image?url=' + image['URL'];
+        }
 
         $ctrl.onImageError = function() {
             console.log('ERROR');

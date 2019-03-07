@@ -1,5 +1,6 @@
+import asyncio
 import posixpath
-from typing import Tuple, List, Any, Awaitable
+from typing import Tuple, List, Any
 
 import aiohttp
 from quart import (
@@ -13,7 +14,7 @@ from quart import (
 )
 
 from web.pdsimage import PDSImage
-from web.redis_cache import ImageCache, get_rcache
+from web.redis_cache import ImageCache, get_rcache, ProgressCache
 
 
 class SessionQuart(Quart):
@@ -126,10 +127,39 @@ async def register_image() -> Tuple[Response, int]:
 @services.route('/images', methods=['GET'])
 async def get_images() -> Tuple[Response, int]:
     params = {'Active': 'true'}
+    rcache = await get_rcache()
+    image_cache = ImageCache(rcache)
+
+    async def is_cached(im):
+        im['cached'] = await image_cache.exists(im['Name'])
+        return im
+
     async with app.session.get(f'{API_URL}/images', params=params) as resp:
         data = await resp.json()
+        data = await asyncio.gather(*[is_cached(im) for im in data])
+        data = list(sorted(data, key=lambda im: im['ID'], reverse=True))
         status_code = resp.status
     return jsonify(data=data), status_code
+
+
+@services.route('/cache_image', methods=['POST'])
+async def cache_image() -> Tuple[Response, int]:
+    rcache = await get_rcache()
+    image_cache = ImageCache(rcache)
+    data = await request.get_json()
+    url = data['url']
+    name = data['name']
+    if await image_cache.exists(name):
+        return jsonify({'data': 'finished'}), 200
+    else:
+        progress_cache = ProgressCache(rcache)
+        image = await PDSImage.from_url(
+            url=url,
+            session=app.session,
+            progress=(progress_cache, name),
+        )
+        await image_cache.set(name, image)
+        return jsonify({'data': 'finished'}), 200
 
 
 @services.route('/display_image', methods=['GET'])
@@ -138,18 +168,22 @@ async def display_image() -> Response:
     image_cache = ImageCache(rcache)
     url = request.args['url']
     name = posixpath.basename(url)
-    cache_future: Awaitable[Any]
-    if await image_cache.exists(name):
-        image = await image_cache.get(name)
-        cache_future = image_cache.set_time(name)
-    else:
-        image = await PDSImage.from_url(url, session=app.session)
-        cache_future = image_cache.set(name, image)
+    image = await image_cache.get(name)
+    cache_future = image_cache.set_time(name)
     png_output = await image.get_png_output()
     response = await make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
     await cache_future
     return response
+
+
+@services.route('/progress', methods=['POST'])
+async def get_progress():
+    rcache = await get_rcache()
+    data = await request.get_json()
+    ID = data['ID']
+    progress_cache = ProgressCache(rcache)
+    return jsonify({'data': await progress_cache.get(str(ID))})
 
 
 app.register_blueprint(services, url_prefix='/services')

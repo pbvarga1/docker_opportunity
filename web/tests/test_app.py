@@ -1,3 +1,4 @@
+import copy
 from time import sleep
 
 import pytest
@@ -162,7 +163,7 @@ async def test_register_image(client, cli):
     assert await resp.get_json() == {'data': expected}
 
 
-async def test_get_images(client, cli, mocker):
+async def test_get_images(client, cli, mocker, rcache):
     mock_get = mocker.spy(cli, 'get')
     resp = await client.get('/services/images')
     mock_get.assert_called_once_with(
@@ -170,7 +171,10 @@ async def test_get_images(client, cli, mocker):
         params={'Active': 'true'}
     )
     assert resp.status_code == 200
-    assert await resp.get_json() == {'data': IMAGES}
+    c1, c2 = copy.deepcopy(IMAGES)
+    c1['cached'] = False
+    c2['cached'] = False
+    assert await resp.get_json() == {'data': [c2, c1]}
 
 
 async def test_display_image(client, rcache, image, mocker, cli):

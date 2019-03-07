@@ -4,7 +4,7 @@ import abc
 import json
 import asyncio
 from datetime import datetime
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Union
 
 import pvl
 import aioredis
@@ -30,18 +30,27 @@ async def get_rcache() -> aioredis.Redis:
     return rcache
 
 
-class HashCache:
+class RedisCache:
+    """Base class for redis cache interface
+
+    Parameters
+    ----------
+    rcache : :class:`aioredis.Redis`
+        Connected redis instance
+    """
 
     def __init__(self, rcache: aioredis.Redis):
-        """Base class for redis cache interface for hashes
-
-        Parameters
-        ----------
-        rcache : :class:`aioredis.Redis`
-            Connected redis instance
-        """
-
         self._rcache = rcache
+
+
+class HashCache(RedisCache):
+    """Base class for redis cache interface for hashes
+
+    Parameters
+    ----------
+    rcache : :class:`aioredis.Redis`
+        Connected redis instance
+    """
 
     def __repr__(self):
         items = {key: repr(value) for key, value in self.items()}
@@ -317,8 +326,44 @@ class ImageCache(HashCache):
             return all(await asyncio.gather(*tasks))
 
 
-class LoadStatusCache(HashCache):
+class ProgressCache(RedisCache):
 
-    @property
-    async def name(self) -> str:
-        return 'status'
+    EXPIRE = 60 * 5
+
+    async def _set(self, ID: str, progress: float, total: int,
+                   size: int) -> None:
+        await asyncio.gather(
+            self._rcache.set(ID, str(progress), expire=self.EXPIRE),
+            self._rcache.set(f'{ID}:total', str(total), expire=self.EXPIRE),
+            self._rcache.set(f'{ID}:size', str(size), expire=self.EXPIRE),
+        )
+
+    async def start(self, ID: str, size: int) -> None:
+        await self._set(ID, 0.0, 0, size)
+
+    async def _exists(self, key: str) -> bool:
+        return await self._rcache.exists(key)
+
+    async def _get(self, key: str, valtype: type) -> Union[int, float]:
+        value = await self._rcache.get(key)
+        if value is None:
+            value = '-1'
+        return valtype(value)
+
+    async def progress(self, ID: str, chunk: int) -> None:
+        if self._exists(ID):
+            progress: float
+            total: int
+            size: int
+            awaitables = [
+                self._get(ID, float),
+                self._get(f'{ID}:total', int),
+                self._get(f'{ID}:size', int),
+            ]
+            progress, total, size = await asyncio.gather(*awaitables)
+            total += chunk
+            progress = total / size
+            await self._set(ID, progress, total, size)
+
+    async def get(self, ID: str) -> float:
+        return await self._get(ID, float)
