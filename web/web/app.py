@@ -59,7 +59,7 @@ async def after_serving():
 @app.route('/cameras')
 @app.route('/product_types')
 async def index() -> str:
-    return await render_template('index.html')
+    return await render_template('index.html', DSN=DSN)
 
 
 async def _create_resource(resource_name: str,
