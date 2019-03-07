@@ -11,4 +11,10 @@ angular.module('homeApp').service('homeService', function($http) {
     this.registerImage = function(data) {
         return $http.post('/services/images', data=data);
     }
+    this.cacheImage = function(data) {
+        return $http.post('/services/cache_image', data=data);
+    }
+    this.getProgress = function(ID) {
+        return $http.post('/services/progress', data={ID: ID});
+    }
 });

@@ -1,38 +1,52 @@
 import time
-from unittest.mock import patch
 
 import pvl
 import pytest
 import docker
 import numpy as np
+from aiohttp.test_utils import loop_context
 
 from web import redis_cache, pdsimage
 
 TEST_REDIS_PORT = 6380
 
 
-@pytest.fixture(scope='session', autouse=True)
-def redis_server_config():
-    port_patch = patch('web.redis_cache.REDIS_PORT', TEST_REDIS_PORT)
-    with port_patch:
-        yield
+@pytest.fixture(scope='session')
+def loop():
+    with loop_context() as _loop:
+        yield _loop
 
 
 @pytest.fixture(scope='session')
-def docker_container():
+def event_loop(loop):
+    yield loop
+
+
+@pytest.fixture(autouse=True)
+async def redis_server_config(mocker):
+    mocker.patch('web.redis_cache.REDIS_PORT', TEST_REDIS_PORT)
+
+
+@pytest.fixture(scope='session')
+async def docker_container():
     client = docker.from_env()
-    client.images.pull(
-        repository='redis',
-        tag='latest',
-    )
+    try:
+        client.images.get('redis:latest')
+    except docker.errors.ImageNotFound:
+        client.images.pull(
+            repository='redis',
+            tag='latest',
+        )
+
     container = client.containers.run(
         image='redis',
         ports={'6379/tcp': f'{TEST_REDIS_PORT}'},
         detach=True,
         publish_all_ports=True,
     )
+
     try:
-        # wait for posgres to be ready:
+        # wait for redis to be ready:
         n = 0
         for n, text in enumerate(container.logs(stream=True)):
             if b'Server initialized' in text:
@@ -50,16 +64,16 @@ def docker_container():
         container.remove()
 
 
-@pytest.fixture
-def rcache(docker_container):
-    cache = redis_cache.get_rcache()
-    cache.flushall()
+@pytest.fixture(scope='function')
+async def rcache(docker_container):
+    cache = await redis_cache.get_rcache()
+    await cache.flushall()
     yield cache
-    cache.flushall()
+    await cache.flushall()
 
 
 @pytest.fixture(scope='function')
-def label():
+async def label():
     label = pvl.PVLModule({
         'RECORD_BYTES': 3,
         '^IMAGE': 66,
@@ -79,7 +93,7 @@ DTYPE = np.dtype('>i2')
 
 
 @pytest.fixture(scope='function')
-def image(label):
+async def image(label):
     data = np.arange(1, 25).reshape((3, 2, 4))
     data = data.astype(DTYPE)
     im = pdsimage.PDSImage(data, label.copy())
@@ -87,7 +101,7 @@ def image(label):
 
 
 @pytest.fixture(scope='function')
-def gray_image(label):
+async def gray_image(label):
     data = np.arange(1, 9).reshape((1, 2, 4))
     data = data.astype(DTYPE)
     im = pdsimage.PDSImage(data, label.copy())

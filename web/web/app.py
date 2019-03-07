@@ -1,9 +1,10 @@
+import asyncio
 import posixpath
+from typing import Tuple, List, Any
 
-import requests
-from flask import (
-    abort,
-    Flask,
+import aiohttp
+from quart import (
+    Quart,
     jsonify,
     request,
     Response,
@@ -13,76 +14,96 @@ from flask import (
 )
 
 from web.pdsimage import PDSImage
-from web.redis_cache import ImageCache, get_rcache
+from web.redis_cache import ImageCache, get_rcache, ProgressCache
 
-app = Flask(__name__)
-app.url_map.strict_slashes = False
+
+class SessionQuart(Quart):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.session: aiohttp.ClientSession = None
+
+
+app = SessionQuart(__name__)
 
 services = Blueprint('services', __name__)
 
 API_URL = 'http://opp-app:80/api'
 
 
+@app.before_serving
+async def before_serving():
+    session = aiohttp.ClientSession(raise_for_status=True)
+    app.session = session
+
+
+@app.after_serving
+async def after_serving():
+    await app.session.close()
+
+
 @app.route('/')
 @app.route('/cameras')
 @app.route('/product_types')
-def index() -> Response:
-    return render_template('index.html')
+async def index() -> str:
+    return await render_template('index.html')
 
 
-def _create_resource(resource_name: str, is_upper: bool) -> dict:
+async def _create_resource(resource_name: str,
+                           is_upper: bool) -> Tuple[dict, int]:
     url = f'{API_URL}/{resource_name}'
     try:
-        name = request.json['name']
+        request_json = await request.get_json()
+        name = request_json['name']
         if is_upper:
             name = name.upper()
         data = {'Name': name}
     except KeyError:
-        abort(400, 'json format should be {"name": "<value>"')
-    response = requests.post(url, json=data)
-    response.raise_for_status()
-    return response.json()
+        return {'error': 'json format should be {"name": "<value>"}'}, 400
+    async with app.session.post(url, json=data) as resp:
+        data = await resp.json()
+    return data, resp.status
 
 
-def _get_resources(resource_name: str) -> list:
+async def _get_resources(resource_name: str) -> Tuple[List[Any], int]:
     url = f'{API_URL}/{resource_name}'
-    params = {'Active': True}
-    response = requests.get(url, params=params)
+    params = {'Active': 'true'}
     try:
-        response.raise_for_status()
-    except requests.exceptions.HTTPError:
-        return []
-    resources = response.json()
-    return resources
+        async with app.session.get(url, params=params) as resp:
+            resources = await resp.json()
+            status_code = resp.status
+    except aiohttp.ClientResponseError as err:
+        return [], err.status
+    return resources, status_code
 
 
 @services.route('/product_types', methods=['POST'])
-def create_product_type() -> Response:
-    product_type = _create_resource('product_types', True)
-    return jsonify(data=product_type)
+async def create_product_type() -> Tuple[Response, int]:
+    product_type, status_code = await _create_resource('product_types', True)
+    return jsonify(data=product_type), status_code
 
 
 @services.route('/product_types', methods=['GET'])
-def get_product_types() -> Response:
-    product_types = _get_resources('product_types')
-    return jsonify(data=product_types)
+async def get_product_types() -> Tuple[Response, int]:
+    product_types, status_code = await _get_resources('product_types')
+    return jsonify(data=product_types), status_code
 
 
 @services.route('/cameras', methods=['POST'])
-def create_camera() -> Response:
-    camera = _create_resource('cameras', False)
-    return jsonify(data=camera)
+async def create_camera() -> Tuple[Response, int]:
+    camera, status_code = await _create_resource('cameras', False)
+    return jsonify(data=camera), status_code
 
 
 @services.route('/cameras', methods=['GET'])
-def get_cameras() -> Response:
-    cameras = _get_resources('cameras')
-    return jsonify(data=cameras)
+async def get_cameras() -> Tuple[Response, int]:
+    cameras, status_code = await _get_resources('cameras')
+    return jsonify(data=cameras), status_code
 
 
 @services.route('/images', methods=['POST'])
-def register_image() -> Response:
-    data = request.json
+async def register_image() -> Tuple[Response, int]:
+    data = await request.get_json()
     sol = int(data['sol'])
     url = str(data['url'])
     name = posixpath.basename(url)
@@ -97,35 +118,72 @@ def register_image() -> Response:
         'CameraID': camera_id,
         'ProductTypeID': product_type_id,
     }
-    r = requests.post(f'{API_URL}/images', json=new_image)
-    r.raise_for_status()
-    return jsonify(data=r.json())
+    async with app.session.post(f'{API_URL}/images', json=new_image) as resp:
+        data = await resp.json()
+        status_code = resp.status
+    return jsonify(data=data), status_code
 
 
 @services.route('/images', methods=['GET'])
-def get_images() -> Response:
-    params = {'Active': True}
-    r = requests.get(f'{API_URL}/images', params=params)
-    r.raise_for_status()
-    return jsonify(data=r.json())
+async def get_images() -> Tuple[Response, int]:
+    params = {'Active': 'true'}
+    rcache = await get_rcache()
+    image_cache = ImageCache(rcache)
+
+    async def is_cached(im):
+        im['cached'] = await image_cache.exists(im['Name'])
+        return im
+
+    async with app.session.get(f'{API_URL}/images', params=params) as resp:
+        data = await resp.json()
+        data = await asyncio.gather(*[is_cached(im) for im in data])
+        data = list(sorted(data, key=lambda im: im['ID'], reverse=True))
+        status_code = resp.status
+    return jsonify(data=data), status_code
+
+
+@services.route('/cache_image', methods=['POST'])
+async def cache_image() -> Tuple[Response, int]:
+    rcache = await get_rcache()
+    image_cache = ImageCache(rcache)
+    data = await request.get_json()
+    url = data['url']
+    name = data['name']
+    if await image_cache.exists(name):
+        return jsonify({'data': 'finished'}), 200
+    else:
+        progress_cache = ProgressCache(rcache)
+        image = await PDSImage.from_url(
+            url=url,
+            session=app.session,
+            progress=(progress_cache, name),
+        )
+        await image_cache.set(name, image)
+        return jsonify({'data': 'finished'}), 200
 
 
 @services.route('/display_image', methods=['GET'])
-def display_image() -> Response:
-    rcache = get_rcache()
+async def display_image() -> Response:
+    rcache = await get_rcache()
     image_cache = ImageCache(rcache)
     url = request.args['url']
     name = posixpath.basename(url)
-    if name in image_cache:
-        image = image_cache[name]
-        image_cache.set_time(name)
-    else:
-        image = PDSImage.from_url(url)
-        image_cache[name] = image
-    png_output = image.get_png_output()
-    response = make_response(png_output.getvalue())
+    image = await image_cache.get(name)
+    cache_future = image_cache.set_time(name)
+    png_output = await image.get_png_output()
+    response = await make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
+    await cache_future
     return response
+
+
+@services.route('/progress', methods=['POST'])
+async def get_progress():
+    rcache = await get_rcache()
+    data = await request.get_json()
+    ID = data['ID']
+    progress_cache = ProgressCache(rcache)
+    return jsonify({'data': await progress_cache.get(str(ID))})
 
 
 app.register_blueprint(services, url_prefix='/services')
