@@ -166,22 +166,22 @@ Make sure docker is installed and running. To get the application running:
    `Sentry on Premise <https://github.com/getsentry/onpremise>`_ reproduced
    below:
 
-    1. ``docker volume create --name=sentry-data && docker volume create --name=opportunity-postgres``
-    2. Make adjustments to the ``.env`` file.
-    3. ``docker-compose build`` - Build and tag the Docker services
-    4. ``docker-compose run --rm web config generate-secret-key`` - Generate a
-       secret key. Add it to ``.env`` as ``SENTRY_SECRET_KEY``.
-    5. ``docker-compose run --rm web upgrade`` - Build the database. Use the
+   1. ``docker volume create --name=sentry-data && docker volume create --name=opportunity-postgres``
+   2. Make adjustments to the ``.env`` file.
+   3. ``docker-compose build`` - Build and tag the Docker services
+   4. ``docker-compose run --rm web config generate-secret-key`` - Generate a
+      secret key. Add it to ``.env`` as ``SENTRY_SECRET_KEY``.
+   5. ``docker-compose run --rm web upgrade`` - Build the database. Use the
        interactive prompts to create a user account.
 
-        * If you never get to the interactive prompt, you need to make room
-          by deleting images and volumes.
+       * If you never get to the interactive prompt, you need to make room
+         by deleting images and volumes.
 
 4. From the top directory ``oportunity``, run:
 
-     .. code-block:: bash
+.. code-block:: bash
 
-        $ docker-compose up
+   $ docker-compose up
 
 
 Which will build the images and run the docker containers. If you are using
