@@ -5,8 +5,8 @@ from typing import Tuple, List, Any
 
 import logging
 import aiohttp
-import sentry_sdk
-from sentry_sdk.integrations.aiohttp import AioHttpIntegration
+import sentry_sdk  # type: ignore
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration  # type: ignore
 from quart import (
     Quart,
     jsonify,
@@ -216,7 +216,7 @@ async def get_progress():
     ID = data['ID']
     progress_cache = ProgressCache(rcache)
     progress = await progress_cache.get(str(ID))
-    logger.info(f'Progress: {name}: {progress * 100}%')
+    logger.info(f'Progress: {ID}: {progress * 100}%')
     return jsonify({'data': progress})
 
 

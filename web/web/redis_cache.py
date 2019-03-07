@@ -378,5 +378,5 @@ class ProgressCache(RedisCache):
             await self._set(ID, progress, total, size)
 
     async def get(self, ID: str) -> float:
-        logger.infor(f'Getting Progress {ID}')
+        logger.info(f'Getting Progress {ID}')
         return await self._get(ID, float)
