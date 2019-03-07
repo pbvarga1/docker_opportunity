@@ -1,1 +1,8 @@
 __pycache__
+.pytest_cache
+Dockerfile
+web.egg-info
+tests
+web/__pycache__
+yarn-error.log
+web/static/node_modules

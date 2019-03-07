@@ -2,12 +2,20 @@ from typing import Dict, Any
 
 from datetime import datetime
 
+import sentry_sdk  # type: ignore
 from flask import Flask
 import sqlalchemy as sa  # type: ignore
 from flask_cors import CORS  # type: ignore
 from flask_sqlalchemy import SQLAlchemy, Model  # type: ignore
+from sentry_sdk.integrations.flask import FlaskIntegration  # type: ignore
 
 from app import config
+from app.constants import DSN
+
+sentry_sdk.init(
+    dsn=DSN,
+    integrations=[FlaskIntegration()]
+)
 
 app = Flask(__name__)
 app.config.from_object(config.DevelopmentConfig)  # type: ignore

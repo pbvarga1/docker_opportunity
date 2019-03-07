@@ -1,0 +1,3 @@
+from typing import Callable, Any
+
+def alru_cache(fn: Callable=None, maxsize: int=128, typed: bool=False, cls: Any=False, kwargs: Any=False, cache_exceptions: bool=False, loop: Any=None) -> Any: ...

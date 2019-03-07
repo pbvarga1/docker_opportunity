@@ -22,6 +22,8 @@ setup(
         'Quart==0.8.1',
         'aiohttp==3.5.4',
         'aioredis==1.2.0',
+        'sentry-sdk==0.7.6',
+        'async-lru==1.0.2',
     ],
     license="BSD",
     zip_safe=False,

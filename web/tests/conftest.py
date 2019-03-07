@@ -11,6 +11,12 @@ from web import redis_cache, pdsimage
 TEST_REDIS_PORT = 6380
 
 
+@pytest.fixture(scope='function', autouse=True)
+def turn_off_sentry(mocker):
+    mocker.patch('web.constants.DSN', '')
+    mocker.patch('web.app.DSN', '')
+
+
 @pytest.fixture(scope='session')
 def loop():
     with loop_context() as _loop:

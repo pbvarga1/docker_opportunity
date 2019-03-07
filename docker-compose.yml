@@ -1,6 +1,32 @@
-version: '3.1'
+version: '3.4'
+
+x-defaults: &defaults
+  restart: unless-stopped
+  image: sentry:9.0-onbuild
+  depends_on:
+    - redis
+    - opp-database
+    - memcached
+    - smtp
+  env_file: .env
+  environment:
+    SENTRY_MEMCACHED_HOST: memcached
+    SENTRY_REDIS_HOST: redis
+    SENTRY_POSTGRES_HOST: opp-database
+    SENTRY_EMAIL_HOST: smtp
+  volumes:
+    - sentry-data:/var/lib/sentry/files
+
 
 services:
+    smtp:
+        restart: unless-stopped
+        image: tianon/exim4
+
+    memcached:
+        restart: unless-stopped
+        image: memcached:1.5-alpine
+
     opp-database:
         image: postgres
         restart: always
@@ -9,6 +35,8 @@ services:
             - POSTGRES_USER=perry
         ports:
             - 5433:5432
+        volumes:
+            - opportunity-postgres:/var/lib/postgresql/data
     opp-app:
         build: ./app
         restart: always
@@ -21,8 +49,22 @@ services:
     redis:
         image: redis
         ports:
-          - "6379:6379"
+            - "6379:6379"
         command: redis-server --appendonly yes
+    
+    sentry-web:
+        <<: *defaults
+        ports:
+          - '9000:9000'
+
+    sentry-cron:
+        <<: *defaults
+        command: run cron
+
+    sentry-worker:
+        <<: *defaults
+        command: run worker
+
     opp-web:
         build: ./web
         restart: always
@@ -33,6 +75,9 @@ services:
         depends_on:
             - opp-database
             - opp-app
+            - sentry-web
+            - sentry-cron
+            - sentry-worker
     opp-swagger:
         image: swaggerapi/swagger-ui
         restart: always
@@ -54,3 +99,9 @@ services:
         depends_on:
             - opp-app
             - opp-web
+
+volumes:
+    sentry-data:
+        external: true
+    opportunity-postgres:
+        external: true

@@ -1,8 +1,12 @@
+import json
 import asyncio
 import posixpath
 from typing import Tuple, List, Any
 
+import logging
 import aiohttp
+import sentry_sdk  # type: ignore
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration  # type: ignore
 from quart import (
     Quart,
     jsonify,
@@ -13,8 +17,11 @@ from quart import (
     render_template,
 )
 
+from web.constants import DSN
 from web.pdsimage import PDSImage
 from web.redis_cache import ImageCache, get_rcache, ProgressCache
+
+logger = logging.getLogger(__name__)
 
 
 class SessionQuart(Quart):
@@ -22,6 +29,12 @@ class SessionQuart(Quart):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.session: aiohttp.ClientSession = None
+
+
+sentry_sdk.init(
+    dsn=DSN,
+    integrations=[AioHttpIntegration()],
+)
 
 
 app = SessionQuart(__name__)
@@ -46,7 +59,7 @@ async def after_serving():
 @app.route('/cameras')
 @app.route('/product_types')
 async def index() -> str:
-    return await render_template('index.html')
+    return await render_template('index.html', DSN=DSN)
 
 
 async def _create_resource(resource_name: str,
@@ -58,21 +71,29 @@ async def _create_resource(resource_name: str,
         if is_upper:
             name = name.upper()
         data = {'Name': name}
+        logger.info(f'Creating resource {resource_name} with name {name}')
     except KeyError:
+        logger.exception('json format should be {"name": "<value>"}')
         return {'error': 'json format should be {"name": "<value>"}'}, 400
-    async with app.session.post(url, json=data) as resp:
-        data = await resp.json()
+    try:
+        async with app.session.post(url, json=data) as resp:
+            data = await resp.json()
+    except aiohttp.ClientResponseError as err:
+        logger.exception(f'Error creating resource {resource_name}')
+        return {'error': str(err)}, err.status
     return data, resp.status
 
 
 async def _get_resources(resource_name: str) -> Tuple[List[Any], int]:
     url = f'{API_URL}/{resource_name}'
     params = {'Active': 'true'}
+    logger.info(f'GET {url}')
     try:
         async with app.session.get(url, params=params) as resp:
             resources = await resp.json()
             status_code = resp.status
     except aiohttp.ClientResponseError as err:
+        logger.exception(f'Failed getting resource {resource_name}')
         return [], err.status
     return resources, status_code
 
@@ -118,9 +139,16 @@ async def register_image() -> Tuple[Response, int]:
         'CameraID': camera_id,
         'ProductTypeID': product_type_id,
     }
-    async with app.session.post(f'{API_URL}/images', json=new_image) as resp:
-        data = await resp.json()
-        status_code = resp.status
+    api_url = f'{API_URL}/images'
+    logger.info(f'POST {api_url} - data: {json.dumps(new_image)}')
+    try:
+        async with app.session.post(api_url, json=new_image) as resp:
+            data = await resp.json()
+            status_code = resp.status
+    except aiohttp.ClientResponseError as err:
+        logger.exception(f'Failed creating image with error {str(err)}')
+        data = {}
+        status_code = err.status
     return jsonify(data=data), status_code
 
 
@@ -134,7 +162,9 @@ async def get_images() -> Tuple[Response, int]:
         im['cached'] = await image_cache.exists(im['Name'])
         return im
 
-    async with app.session.get(f'{API_URL}/images', params=params) as resp:
+    api_url = f'{API_URL}/images'
+    logger.info('GET api_url')
+    async with app.session.get(api_url, params=params) as resp:
         data = await resp.json()
         data = await asyncio.gather(*[is_cached(im) for im in data])
         data = list(sorted(data, key=lambda im: im['ID'], reverse=True))
@@ -152,6 +182,7 @@ async def cache_image() -> Tuple[Response, int]:
     if await image_cache.exists(name):
         return jsonify({'data': 'finished'}), 200
     else:
+        logger.info(f'Cacheing Image: {name}')
         progress_cache = ProgressCache(rcache)
         image = await PDSImage.from_url(
             url=url,
@@ -168,6 +199,7 @@ async def display_image() -> Response:
     image_cache = ImageCache(rcache)
     url = request.args['url']
     name = posixpath.basename(url)
+    logger.info(f'Displaying Image: {name}')
     image = await image_cache.get(name)
     cache_future = image_cache.set_time(name)
     png_output = await image.get_png_output()
@@ -183,7 +215,9 @@ async def get_progress():
     data = await request.get_json()
     ID = data['ID']
     progress_cache = ProgressCache(rcache)
-    return jsonify({'data': await progress_cache.get(str(ID))})
+    progress = await progress_cache.get(str(ID))
+    logger.info(f'Progress: {ID}: {progress * 100}%')
+    return jsonify({'data': progress})
 
 
 app.register_blueprint(services, url_prefix='/services')

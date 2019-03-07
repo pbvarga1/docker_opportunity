@@ -17,19 +17,30 @@ angular.module('createApp').component('create', {
             setItems();
             console.log($ctrl.items)
         }
-        // console.log($ctrl.endpoint);
 
         function setItems() {
-            createService.getItems($ctrl.serviceEndpoint).then(function(data) {
-                $ctrl.items = data.data.data;
-            })
+            createService.getItems($ctrl.serviceEndpoint).then(
+                function(data) {
+                    $ctrl.items = data.data.data;
+                },
+                function(data) {
+                    console.log('EROR');
+                    console.log(data);
+                })
+            ;
         }
 
         $ctrl.createItem = function() {
-            createService.createItem($ctrl.serviceEndpoint, $ctrl.newName).then(function(data) {
-                $ctrl.newName = '';
-                setItems();
-            })
+            createService.createItem($ctrl.serviceEndpoint, $ctrl.newName).then(
+                function(data) {
+                    $ctrl.newName = '';
+                    setItems();
+                },
+                function(data) {
+                    console.log('EROR');
+                    console.log(data);
+                }
+            );
         }
     },
 });
