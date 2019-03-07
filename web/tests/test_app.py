@@ -181,23 +181,12 @@ async def test_display_image(client, rcache, image, mocker, cli):
 
     async def from_url(*args, **kwargs):
         return image
-    mock_from_url = mocker.patch(
-        'web.app.PDSImage.from_url',
-        side_effect=from_url,
-    )
-    r = await client.get('/services/display_image?url=path/image.img')
-    assert r.status_code == 200
-    assert r.headers['Content-Type'] == 'image/png'
-    mock_from_url.assert_called_once_with('path/image.img', session=cli)
-    assert (await image.get_png_output()).getvalue() == await r.get_data()
     image_cache = ImageCache(rcache)
-    assert await image_cache.exists('image.img')
-    time_stamp = await image_cache.get_time('image.img')
+    await image_cache.set('image.img', image)
     sleep(1)
+    time_stamp = await image_cache.get_time('image.img')
     r = await client.get('/services/display_image?url=path/image.img')
     assert r.status_code == 200
     assert r.headers['Content-Type'] == 'image/png'
-    # Make sure not called again
-    assert mock_from_url.call_count == 1
     assert (await image.get_png_output()).getvalue() == await r.get_data()
     assert time_stamp != await image_cache.get_time('image.img')

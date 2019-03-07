@@ -6,6 +6,7 @@ import aiohttp
 import numpy as np
 
 from web import pdsimage
+from web import redis_cache
 
 
 @pytest.mark.asyncio
@@ -20,7 +21,9 @@ async def test_get_shape(label):
     assert await pdsimage.PDSImage._get_shape(label) == (3, 2, 4)
 
 
-async def test_from_url(aiohttp_client, image):
+async def test_from_url(aiohttp_client, image, rcache):
+    progress_cache = redis_cache.ProgressCache(rcache)
+
     async def download_image(request):
         data = await image.data
         label = await image.label
@@ -30,7 +33,11 @@ async def test_from_url(aiohttp_client, image):
     url = '/image.img'
     app.router.add_get(url, download_image)
     client = await aiohttp_client(app)
-    im = await pdsimage.PDSImage.from_url(url, client)
+    im = await pdsimage.PDSImage.from_url(
+        url=url,
+        session=client,
+        progress=(progress_cache, 'image.img'),
+    )
     np.testing.assert_array_equal(await im.data, await image.data)
 
     # Test detatched
@@ -50,7 +57,8 @@ async def test_from_url(aiohttp_client, image):
     app.router.add_get(url, download_image)
     app.router.add_get('/image.lbl', download_label)
     client = await aiohttp_client(app)
-    im = await pdsimage.PDSImage.from_url(url, client, True)
+    progress = (progress_cache, 'image.img')
+    im = await pdsimage.PDSImage.from_url(url, client, progress, True)
     np.testing.assert_array_equal(await im.data, await image.data)
 
 

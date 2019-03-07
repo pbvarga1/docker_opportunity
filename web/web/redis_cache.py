@@ -351,7 +351,7 @@ class ProgressCache(RedisCache):
         return valtype(value)
 
     async def progress(self, ID: str, chunk: int) -> None:
-        if self._exists(ID):
+        if await self._exists(ID):
             progress: float
             total: int
             size: int
