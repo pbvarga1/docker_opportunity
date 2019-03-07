@@ -11,6 +11,8 @@ Opportunity App
   :target: https://www.python.org/downloads/release/python-371/
 .. image:: https://img.shields.io/badge/AngularJS-1.6.9-red.svg
   :target: https://docs.angularjs.org/guide
+.. image:: https://zenodo.org/badge/172360719.svg
+   :target: https://zenodo.org/badge/latestdoi/172360719
 
 
 .. contents:: Table of Contents
@@ -226,3 +228,10 @@ Links
 +----------------+-----------------------------+------------------------+
 |   **Sentry**   | http://192.168.99.100:9000/ | http://127.0.0.1:9000/ |
 +----------------+-----------------------------+------------------------+
+
+Citing this Repo
+----------------
+
+It's MIT Licensed so feel free to use whatever you want from here. I don't care
+if you do not cite this repo in published work if you used any of it. Creating
+the DOI was more of an exercise for myself than anything else.
