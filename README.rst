@@ -55,10 +55,10 @@ Union
 
 * `Docker <https://docs.docker.com/>`_
 
-    * Testing with Docker: Creating a temporary database in docker and using
-      the database to test as if on a live server; Creating a redis server and
-      testing against that.
-    * `Multistage build <https://docs.docker.com/develop/develop-images/multistage-build/>`_
+  * Testing with Docker: Creating a temporary database in docker and using
+  the database to test as if on a live server; Creating a redis server and
+  testing against that.
+  * `Multistage build <https://docs.docker.com/develop/develop-images/multistage-build/>`_
 
 * `PostgreSQL <https://www.postgresql.org/docs/>`_
 
@@ -66,14 +66,14 @@ Union
 * `REST API <https://en.wikipedia.org/wiki/Representational_state_transfer>`_
 * `Angularjs <https://docs.angularjs.org/api>`_
 
-    * `angular-ui bootstrap modals <https://angular-ui.github.io/bootstrap/#!#modal>`_
-    * `components <https://docs.angularjs.org/guide/component>`_
-    * `routing <https://docs.angularjs.org/tutorial/step_09>`_
-    * `services <https://docs.angularjs.org/api/ng/type/angular.Module#service>`_
+  * `angular-ui bootstrap modals <https://angular-ui.github.io/bootstrap/#!#modal>`_
+  * `components <https://docs.angularjs.org/guide/component>`_
+  * `routing <https://docs.angularjs.org/tutorial/step_09>`_
+  * `services <https://docs.angularjs.org/api/ng/type/angular.Module#service>`_
 
 * `pytest <https://docs.pytest.org/en/latest/contents.html>`_
 
-    * `fixtures <https://docs.pytest.org/en/latest/fixture.html>`_
+  * `fixtures <https://docs.pytest.org/en/latest/fixture.html>`_
 
 * `mock <https://docs.python.org/3/library/unittest.mock.html>`_
 * `Travis-CI <https://docs.travis-ci.com/>`_
@@ -82,34 +82,34 @@ Union
 * `python packaging <https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py>`_
 * `yarn <https://yarnpkg.com/en/>`_
 
-    * js package management in general
+  * js package management in general
 
 * `redis <https://redis.io/>`_
 
-    * `redis-py <https://redis-py.readthedocs.io/en/latest/>`_
-    * `redis hashes <https://redis.io/topics/data-types#hashes>`_
+  * `redis-py <https://redis-py.readthedocs.io/en/latest/>`_
+  * `redis hashes <https://redis.io/topics/data-types#hashes>`_
 
 * `Type Hints <https://www.python.org/dev/peps/pep-0484/>`_
 
-    * `Python typing <https://docs.python.org/3.6/library/typing.html>`_
-    * `Static Type Checking with Mypy <https://www.python.org/dev/peps/pep-0484/>`_
-    * `Stub Files <https://www.python.org/dev/peps/pep-0484/#stub-files>`_
+  * `Python typing <https://docs.python.org/3.6/library/typing.html>`_
+  * `Static Type Checking with Mypy <https://www.python.org/dev/peps/pep-0484/>`_
+  * `Stub Files <https://www.python.org/dev/peps/pep-0484/#stub-files>`_
 
-        * See also `Mypy Stubs <https://mypy.readthedocs.io/en/latest/stubs.html>`_
+    * See also `Mypy Stubs <https://mypy.readthedocs.io/en/latest/stubs.html>`_
 
 * `Swagger <https://swagger.io/>`_
 
-    * `OpenAPI 3.0 <https://swagger.io/docs/specification/about/>`_
-    * `OpenAPI 2.0 <https://swagger.io/docs/specification/2-0/basic-structure/>`_
+  * `OpenAPI 3.0 <https://swagger.io/docs/specification/about/>`_
+  * `OpenAPI 2.0 <https://swagger.io/docs/specification/2-0/basic-structure/>`_
 
-        * `See this commit <https://github.com/pbvarga1/opportunity/blob/
-          d4f523093d41a288096a04656560397e9d6ac690/app/swagger.json>`_
+    * `See this commit <https://github.com/pbvarga1/opportunity/blob/
+      d4f523093d41a288096a04656560397e9d6ac690/app/swagger.json>`_
 
 * `Sphinx Documentation <http://www.sphinx-doc.org/en/master/>`_
 
-    * `Restructured Text (rst) format <http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
-    * `Autodoc extension <http://www.sphinx-doc.org/en/master/usage/xtensions/autodoc.html>`_
-    * `NumpyDoc extension <https://numpydoc.readthedocs.io/en/latest/install.html#sphinx-config-options>`_
+  * `Restructured Text (rst) format <http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
+  * `Autodoc extension <http://www.sphinx-doc.org/en/master/usage/xtensions/autodoc.html>`_
+  * `NumpyDoc extension <https://numpydoc.readthedocs.io/en/latest/install.html#sphinx-config-options>`_
 
 * `Numpy Docstrings <https://numpydoc.readthedocs.io/en/latest/format.html>`_
 
@@ -120,25 +120,31 @@ Master
 * `Asyncio <https://docs.python.org/3/library/asyncio.html>`_
 * `Quart <http://pgjones.gitlab.io/quart/>`_
 
-    * Use with Angular
-    * `Blueprints <http://pgjones.gitlab.io/quart/blueprints.html>`_
+  * Use with Angular
+  * `Blueprints <http://pgjones.gitlab.io/quart/blueprints.html>`_
 
 * `AIOHTTP <https://aiohttp.readthedocs.io/en/stable/>`_
 * `aioredis <https://aioredis.readthedocs.io/en/v1.2.0/>`_
 * `pytest-asyncio <https://github.com/pytest-dev/pytest-asyncio>`_
 * `pytest-aiohttp <https://docs.aiohttp.org/en/stable/testing.html>`_
 * `pytest-mock <https://github.com/pytest-dev/pytest-mock/>`_
+* `logging <https://docs.python.org/3/library/logging.html>`_
+* `Sentry <https://sentry.io/welcome/>`_
+
+  * `Sentry On-Premise: Docker <https://github.com/getsentry/onpremise>`_
+  * `Python sentry_sdk <https://docs.sentry.io/error-reporting/quickstart/?platform=python>`_
+  * `AngularJS sentry_sdk <https://docs.sentry.io/error-reporting/quickstart/?platform=node#pick-a-client-integration>`_
 
 Flask-Frontend
 ++++++++++++++
 
 * Flask + Angular
 
-    * Routing to multiple pages handled by Angular through Flask
+  * Routing to multiple pages handled by Angular through Flask
 
 * `Flask <http://flask.pocoo.org/>`_
 
-    * `Blueprints <http://flask.pocoo.org/docs/1.0/blueprints/>`_
+  * `Blueprints <http://flask.pocoo.org/docs/1.0/blueprints/>`_
 
 Quick Start
 -----------
