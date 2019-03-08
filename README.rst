@@ -11,6 +11,8 @@ Opportunity App
     :target: https://www.python.org/downloads/release/python-371/
 .. image:: https://img.shields.io/badge/AngularJS-1.6.9-red.svg
     :target: https://docs.angularjs.org/guide
+.. image:: https://zenodo.org/badge/172360719.svg
+   :target: https://zenodo.org/badge/latestdoi/172360719
 
 
 .. contents:: Table of Contents
@@ -143,18 +145,32 @@ Quick Start
 
 If you want to use this project for your own learning exercises, fork the repo
 to your own github account and then clone your forked repo to your computer.
-Make sure docker is installed and running. If you are **not** using docker
-toolbox, set the following environment envariable:
+Make sure docker is installed and running. To get the application running:
 
-.. code-block:: bash
+1. If you are **not** using docker
+   toolbox, set the following environment envariable:
+
+   .. code-block:: bash
 
     $ export DOCKER_IP='127.0.0.1'
 
-From the top directory ``oportunity``, run:
+
+2. You will need to adjust the volumes in ``docker-compose.yml`` to your own
+   paths.
+
+3. If using a volume for the `opp-web`` service (as I do), you have to install
+   the node packages first. ``cd`` into the directory with the ``package.json``
+   file and then
+
+   .. code-block:: bash
+
+     $ yarn install --modules-folder static/node_modules
+
+4. From the top directory ``oportunity``, run:
 
 .. code-block:: bash
 
-    $ docker-compose up
+   $ docker-compose up
 
 
 Which will build the images and run the docker containers. If you are using
