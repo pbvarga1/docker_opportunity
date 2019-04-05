@@ -58,6 +58,7 @@ Union
   * Testing with Docker: Creating a temporary database in docker and using
   the database to test as if on a live server; Creating a redis server and
   testing against that.
+
   * `Multistage build <https://docs.docker.com/develop/develop-images/multistage-build/>`_
 
 * `PostgreSQL <https://www.postgresql.org/docs/>`_
